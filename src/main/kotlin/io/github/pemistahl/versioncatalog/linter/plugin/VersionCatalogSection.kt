@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-rootProject.name = "version-catalog-linter-gradle-plugin"
+package io.github.pemistahl.versioncatalog.linter.plugin
+
+internal enum class VersionCatalogSection(val label: String) {
+    VERSIONS("[versions]"),
+    LIBRARIES("[libraries]"),
+    BUNDLES("[bundles]"),
+    PLUGINS("[plugins]"),
+}
