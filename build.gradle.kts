@@ -87,7 +87,7 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation("org.tomlj:tomlj:1.1.0")
+    implementation("org.tomlj:tomlj:1.1.1")
 }
 
 repositories {
