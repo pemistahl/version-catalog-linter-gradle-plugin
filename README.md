@@ -1,6 +1,7 @@
 # Version Catalog Linter Gradle Plugin
 
 [![build status](https://github.com/pemistahl/version-catalog-linter-gradle-plugin/actions/workflows/build.yml/badge.svg)](https://github.com/pemistahl/version-catalog-linter-gradle-plugin/actions/workflows/build.yml)
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/io.github.pemistahl.version-catalog-linter)](https://plugins.gradle.org/plugin/io.github.pemistahl.version-catalog-linter)
 [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 ## What does this plugin do?
@@ -18,7 +19,7 @@ Add the plugin to your Gradle build file.
 
 ```kotlin
 plugins {
-    id("io.github.pemistahl.version-catalog-linter") version "1.0.0"
+    id("io.github.pemistahl.version-catalog-linter") version "1.0.1"
 }
 ```
 

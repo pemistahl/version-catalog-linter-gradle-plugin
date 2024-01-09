@@ -21,7 +21,7 @@ import org.gradle.testkit.runner.TaskOutcome
 import java.io.File
 import kotlin.io.path.createDirectories
 import kotlin.io.path.createFile
-import kotlin.io.path.deleteExisting
+import kotlin.io.path.deleteIfExists
 import kotlin.io.path.readText
 import kotlin.io.path.writeText
 import kotlin.test.AfterTest
@@ -144,10 +144,10 @@ class VersionCatalogLinterPluginFunctionalTest {
 
     @AfterTest
     fun afterTest() {
-        buildFilePath.deleteExisting()
-        settingsFilePath.deleteExisting()
-        versionCatalogFilePath.deleteExisting()
-        customVersionCatalogFilePath.deleteExisting()
+        buildFilePath.deleteIfExists()
+        settingsFilePath.deleteIfExists()
+        versionCatalogFilePath.deleteIfExists()
+        customVersionCatalogFilePath.deleteIfExists()
     }
 
     @Test
@@ -284,6 +284,37 @@ class VersionCatalogLinterPluginFunctionalTest {
 
         val defaultVersionCatalogContent = versionCatalogFilePath.readText()
         assertEquals(unformattedVersionCatalogContent, defaultVersionCatalogContent)
+    }
+
+    @Test
+    fun testPluginWithUnavailableVersionCatalog() {
+        versionCatalogFilePath.deleteIfExists()
+
+        buildFilePath.writeText(
+            """
+            plugins {
+                id("io.github.pemistahl.version-catalog-linter")
+            }
+            """.trimIndent(),
+        )
+
+        val checkTaskResult =
+            GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("checkVersionCatalog")
+                .buildAndFail()
+
+        assertEquals(
+            TaskOutcome.FAILED,
+            checkTaskResult.task(":checkVersionCatalog")?.outcome,
+        )
+
+        assertTrue(
+            checkTaskResult.output.contains(
+                "An input file was expected to be present but it doesn't exist.",
+            ),
+        )
     }
 
     private fun String.containsAll(elements: List<CharSequence>): Boolean {

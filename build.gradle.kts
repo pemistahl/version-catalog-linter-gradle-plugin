@@ -19,11 +19,12 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     kotlin("jvm") version "1.9.22"
     id("org.jlleitschuh.gradle.ktlint") version "12.0.3"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
     id("com.gradle.plugin-publish") version "1.2.1"
 }
 
 group = "io.github.pemistahl"
-version = "1.0.0"
+version = "1.0.1"
 
 kotlin {
     compilerOptions {
@@ -42,6 +43,7 @@ testing {
             if (this is JvmTestSuite) {
                 useJUnitJupiter()
                 dependencies {
+                    implementation(gradleApi())
                     implementation("org.jetbrains.kotlin:kotlin-test")
                     implementation("org.jetbrains.kotlin:kotlin-test-junit5")
                 }
@@ -69,6 +71,11 @@ testing {
 
 tasks.check {
     dependsOn(testing.suites.named("functionalTest"))
+}
+
+tasks.shadowJar {
+    archiveClassifier = ""
+    isEnableRelocation = true
 }
 
 gradlePlugin {

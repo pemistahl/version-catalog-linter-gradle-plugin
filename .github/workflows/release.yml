@@ -52,7 +52,7 @@ jobs:
       - name: Create release and upload artifacts
         uses: softprops/action-gh-release@v1
         with:
-          name: Version Catalog Linter Gradle Plugin ${{ steps.version.outputs.version-without-v }}
+          name: Version Catalog Linter ${{ steps.version.outputs.version-without-v }}
           files: build/libs/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
