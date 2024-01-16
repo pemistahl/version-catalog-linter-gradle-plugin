@@ -129,20 +129,50 @@ abstract class VersionCatalogFormatter : DefaultTask() {
         bundles: List<String>,
         plugins: List<String>,
     ): String {
+        val sections = mutableListOf<String>()
         val separator = "\n"
-        return listOf(
-            VersionCatalogSection.VERSIONS.label,
-            versions.joinToString(separator),
-            "",
-            VersionCatalogSection.LIBRARIES.label,
-            libraries.joinToString(separator),
-            "",
-            VersionCatalogSection.BUNDLES.label,
-            bundles.joinToString(separator),
-            "",
-            VersionCatalogSection.PLUGINS.label,
-            plugins.joinToString(separator) + separator,
-        ).joinToString(separator)
+
+        if (versions.isNotEmpty()) {
+            sections.addAll(
+                listOf(
+                    VersionCatalogSection.VERSIONS.label,
+                    versions.joinToString(separator),
+                    "",
+                ),
+            )
+        }
+
+        if (libraries.isNotEmpty()) {
+            sections.addAll(
+                listOf(
+                    VersionCatalogSection.LIBRARIES.label,
+                    libraries.joinToString(separator),
+                    "",
+                ),
+            )
+        }
+
+        if (bundles.isNotEmpty()) {
+            sections.addAll(
+                listOf(
+                    VersionCatalogSection.BUNDLES.label,
+                    bundles.joinToString(separator),
+                    "",
+                ),
+            )
+        }
+
+        if (plugins.isNotEmpty()) {
+            sections.addAll(
+                listOf(
+                    VersionCatalogSection.PLUGINS.label,
+                    plugins.joinToString(separator),
+                    "",
+                ),
+            )
+        }
+
+        return sections.joinToString(separator)
     }
 
     private fun parseVersionTable(

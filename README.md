@@ -19,7 +19,7 @@ Add the plugin to your Gradle build file.
 
 ```kotlin
 plugins {
-    id("io.github.pemistahl.version-catalog-linter") version "1.0.1"
+    id("io.github.pemistahl.version-catalog-linter") version "1.0.2"
 }
 ```
 
@@ -133,6 +133,7 @@ Execution failed for task ':checkVersionCatalog'.
   Line 11: Entries are not sorted alphabetically in section '[libraries]'. Found key 'antisamy' where 'apacheHttpMime' was expected.
   Line 12: Entries are not sorted alphabetically in section '[libraries]'. Found key 'antlr' where 'groovy' was expected.
   Line 12: Entry with key 'antlr' in section '[libraries]' must not have two or more adjacent whitespace characters.
+  Line 12: Use table notation instead of string notation for library with key 'antlr'. Required order: [module | group], name (, version(.ref))
   Line 13: Entries are not sorted alphabetically in section '[libraries]'. Found key 'apacheHttpClient' where 'groovyTemplates' was expected.
   Line 14: Entries are not sorted alphabetically in section '[libraries]'. Found key 'apacheHttpCore' where 'jgoodiesDesktop' was expected.
   Line 15: Attributes of library with key 'apacheHttpMime' are not sorted correctly. Required order: [module | group], name (, version(.ref))
