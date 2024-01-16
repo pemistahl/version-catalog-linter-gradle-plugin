@@ -39,6 +39,10 @@ jobs:
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v2
 
+      - name: Get tag version
+        id: version
+        uses: battila7/get-version-action@v2
+
       - name: Upload to Gradle Plugin Portal
         env:
           GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
