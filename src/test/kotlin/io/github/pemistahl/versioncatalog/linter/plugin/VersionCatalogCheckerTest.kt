@@ -197,6 +197,19 @@ class VersionCatalogCheckerTest {
 
         assertEquals(
             listOf(
+                "Line 1: Use table notation instead of string notation for library with key 'activation'. " +
+                    "Required order: [module | group], name (, version(.ref))",
+            ),
+            task.checkLibraries(
+                listOf(
+                    1..1 to "activation = \"javax.activation:com.sun.activation:1.2.0\"",
+                    2..2 to "antisamy = { module = \"org.owasp.antisamy:antisamy\", version.ref = \"antisamy\" }",
+                ),
+            ).map { it.toString() },
+        )
+
+        assertEquals(
+            listOf(
                 "Line 1: Attributes of library with key 'activation' are not sorted correctly. " +
                     "Required order: [module | group], name (, version(.ref))",
                 "Line 2: Attributes of library with key 'antisamy' are not sorted correctly. " +

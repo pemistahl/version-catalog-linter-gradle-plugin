@@ -101,6 +101,8 @@ class VersionCatalogLinterPluginFunctionalTest {
                 "Required order: [module | group], name (, version(.ref))",
             "Line 2: Entry with key 'activation' in section '[libraries]' must not have " +
                 "two or more adjacent whitespace characters.",
+            "Line 4: Use table notation instead of string notation for library with key 'antlr'. " +
+                "Required order: [module | group], name (, version(.ref))",
             "Line 7: Entries are not sorted alphabetically in section '[plugins]'. " +
                 "Found key 'shadowJar' where 'ktlint' was expected.",
             "Line 9: Attributes of plugin with key 'ktlint' are not sorted correctly. " +

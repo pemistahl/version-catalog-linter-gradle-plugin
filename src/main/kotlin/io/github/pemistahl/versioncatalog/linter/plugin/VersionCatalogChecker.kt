@@ -86,8 +86,13 @@ abstract class VersionCatalogChecker : DefaultTask() {
         for ((lineNumbers, library) in libraries) {
             val parseResult = Toml.parse(library)
             val key = parseResult.keySet().iterator().next()
+            val requiredOrder = "Required order: [module | group], name (, version(.ref))"
 
-            if (parseResult.isTable(key)) {
+            if (parseResult.isString(key)) {
+                val message =
+                    "Use table notation instead of string notation for library with key '$key'. $requiredOrder"
+                errorMessages.add(ErrorMessage(lineNumbers, message))
+            } else if (parseResult.isTable(key)) {
                 val attributes = parseResult.getTable(key)!!.keySet().iterator()
                 val firstAttribute = attributes.next()
                 val secondAttribute = attributes.next()
@@ -96,8 +101,7 @@ abstract class VersionCatalogChecker : DefaultTask() {
 
                 if (!isModuleDefined && !isGroupAndNameDefined) {
                     val message =
-                        "Attributes of library with key '$key' are not sorted correctly. " +
-                            "Required order: [module | group], name (, version(.ref))"
+                        "Attributes of library with key '$key' are not sorted correctly. $requiredOrder"
                     errorMessages.add(ErrorMessage(lineNumbers, message))
                 }
             }
