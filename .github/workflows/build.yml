@@ -52,7 +52,7 @@ jobs:
           java-version: '8'
 
       - name: Set up Gradle
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
 
       - name: Build and test
         run: ./gradlew check
