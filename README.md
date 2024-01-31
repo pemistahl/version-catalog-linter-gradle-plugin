@@ -136,37 +136,37 @@ Execution failed for task ':checkVersionCatalog'.
   Line 12: Entries are not sorted alphabetically in section '[libraries]'. Found key 'antlr' where 'groovy' was expected.
   Line 12: Entry with key 'antlr' in section '[libraries]' must not have two or more adjacent whitespace characters.
   Line 12: Use table notation instead of string notation for library with key 'antlr'. Required order: [module | group], name (, version(.ref))
-  Line 13: Entries are not sorted alphabetically in section '[libraries]'. Found key 'apacheHttpClient' where 'groovyTemplates' was expected.
-  Line 14: Entries are not sorted alphabetically in section '[libraries]'. Found key 'apacheHttpCore' where 'jgoodiesDesktop' was expected.
-  Line 15: Attributes of library with key 'apacheHttpMime' are not sorted correctly. Required order: [module | group], name (, version(.ref))
-  Line 15: Entries are not sorted alphabetically in section '[libraries]'. Found key 'apacheHttpMime' where 'jgoodiesDialogs' was expected.
-  Line 17: Attributes of library with key 'groovyTemplates' are not sorted correctly. Required order: [module | group], name (, version(.ref))
-  Line 17: Entries are not sorted alphabetically in section '[libraries]'. Found key 'groovyTemplates' where 'jgoodiesFramework' was expected.
-  Line 20: Bundle with key 'groovy' must be indented with each library on a separate line preceded by four whitespace characters.
-  Line 20: Libraries of bundle with key 'groovy' are not sorted alphabetically. Found library 'groovy' where 'groovyTemplates' was expected.
-  Line 20: Libraries of bundle with key 'groovy' are not sorted alphabetically. Found library 'groovyTemplates' where 'groovy' was expected.
-  Lines 21-25: Bundle with key 'jgoodies' must be indented with each library on a separate line preceded by four whitespace characters.
-  Lines 21-25: Entry with key 'jgoodies' in section '[bundles]' must not have leading whitespace.
-  Line 30: Entries are not sorted alphabetically in section '[versions]'. Found key 'duns' where 'axis' was expected.
-  Line 31: Attributes of version with key 'slf4j' are not sorted correctly. Required order: strictly, require, prefer, reject
-  Line 31: Entries are not sorted alphabetically in section '[versions]'. Found key 'slf4j' where 'byteBuddy' was expected.
-  Line 32: Entries are not sorted alphabetically in section '[versions]'. Found key 'exact' where 'cache2k' was expected.
-  Line 32: Entry with key 'exact' in section '[versions]' must not have leading whitespace.
-  Line 32: Entry with key 'exact' in section '[versions]' must not have two or more adjacent whitespace characters.
-  Line 33: Entries are not sorted alphabetically in section '[versions]'. Found key 'groovy' where 'dockerJava' was expected.
-  Line 34: Entries are not sorted alphabetically in section '[versions]'. Found key 'axis' where 'duns' was expected.
-  Line 34: Entry with key 'axis' in section '[versions]' must not have two or more adjacent whitespace characters.
-  Line 35: Entries are not sorted alphabetically in section '[versions]'. Found key 'ktlint' where 'exact' was expected.
-  Line 36: Entries are not sorted alphabetically in section '[versions]'. Found key 'byteBuddy' where 'groovy' was expected.
-  Line 37: Entries are not sorted alphabetically in section '[versions]'. Found key 'springCore' where 'ktlint' was expected.
-  Line 37: Entry with key 'springCore' in section '[versions]' must not have two or more adjacent whitespace characters.
-  Line 38: Entries are not sorted alphabetically in section '[versions]'. Found key 'cache2k' where 'slf4j' was expected.
-  Line 39: Entries are not sorted alphabetically in section '[versions]'. Found key 'dockerJava' where 'springCore' was expected.
-  Line 44: Entries are not sorted alphabetically in section '[plugins]'. Found key 'shadowJar' where 'ktlint' was expected.
-  Line 44: Entry with key 'shadowJar' in section '[plugins]' must not have leading whitespace.
-  Line 44: Entry with key 'shadowJar' in section '[plugins]' must not have two or more adjacent whitespace characters.
-  Line 45: Attributes of plugin with key 'ktlint' are not sorted correctly. Required order: id, version(.ref)
-  Line 45: Entries are not sorted alphabetically in section '[plugins]'. Found key 'ktlint' where 'shadowJar' was expected.
+  Line 14: Entries are not sorted alphabetically in section '[libraries]'. Found key 'apacheHttpClient' where 'groovyTemplates' was expected.
+  Line 15: Entries are not sorted alphabetically in section '[libraries]'. Found key 'apacheHttpCore' where 'jgoodiesDesktop' was expected.
+  Line 16: Attributes of library with key 'apacheHttpMime' are not sorted correctly. Required order: [module | group], name (, version(.ref))
+  Line 16: Entries are not sorted alphabetically in section '[libraries]'. Found key 'apacheHttpMime' where 'jgoodiesDialogs' was expected.
+  Line 18: Attributes of library with key 'groovyTemplates' are not sorted correctly. Required order: [module | group], name (, version(.ref))
+  Line 18: Entries are not sorted alphabetically in section '[libraries]'. Found key 'groovyTemplates' where 'jgoodiesFramework' was expected.
+  Line 21: Bundle with key 'groovy' must be indented with each library on a separate line preceded by four whitespace characters.
+  Line 21: Libraries of bundle with key 'groovy' are not sorted alphabetically. Found library 'groovy' where 'groovyTemplates' was expected.
+  Line 21: Libraries of bundle with key 'groovy' are not sorted alphabetically. Found library 'groovyTemplates' where 'groovy' was expected.
+  Lines 22-26: Bundle with key 'jgoodies' must be indented with each library on a separate line preceded by four whitespace characters.
+  Lines 22-26: Entry with key 'jgoodies' in section '[bundles]' must not have leading whitespace.
+  Line 31: Entries are not sorted alphabetically in section '[versions]'. Found key 'duns' where 'axis' was expected.
+  Line 32: Attributes of version with key 'slf4j' are not sorted correctly. Required order: strictly, require, prefer, reject
+  Line 32: Entries are not sorted alphabetically in section '[versions]'. Found key 'slf4j' where 'byteBuddy' was expected.
+  Line 33: Entries are not sorted alphabetically in section '[versions]'. Found key 'exact' where 'cache2k' was expected.
+  Line 33: Entry with key 'exact' in section '[versions]' must not have leading whitespace.
+  Line 33: Entry with key 'exact' in section '[versions]' must not have two or more adjacent whitespace characters.
+  Line 34: Entries are not sorted alphabetically in section '[versions]'. Found key 'groovy' where 'dockerJava' was expected.
+  Line 35: Entries are not sorted alphabetically in section '[versions]'. Found key 'axis' where 'duns' was expected.
+  Line 35: Entry with key 'axis' in section '[versions]' must not have two or more adjacent whitespace characters.
+  Line 36: Entries are not sorted alphabetically in section '[versions]'. Found key 'ktlint' where 'exact' was expected.
+  Line 37: Entries are not sorted alphabetically in section '[versions]'. Found key 'byteBuddy' where 'groovy' was expected.
+  Line 38: Entries are not sorted alphabetically in section '[versions]'. Found key 'springCore' where 'ktlint' was expected.
+  Line 38: Entry with key 'springCore' in section '[versions]' must not have two or more adjacent whitespace characters.
+  Line 39: Entries are not sorted alphabetically in section '[versions]'. Found key 'cache2k' where 'slf4j' was expected.
+  Line 40: Entries are not sorted alphabetically in section '[versions]'. Found key 'dockerJava' where 'springCore' was expected.
+  Line 45: Entries are not sorted alphabetically in section '[plugins]'. Found key 'shadowJar' where 'ktlint' was expected.
+  Line 45: Entry with key 'shadowJar' in section '[plugins]' must not have leading whitespace.
+  Line 45: Entry with key 'shadowJar' in section '[plugins]' must not have two or more adjacent whitespace characters.
+  Line 46: Attributes of plugin with key 'ktlint' are not sorted correctly. Required order: id, version(.ref)
+  Line 46: Entries are not sorted alphabetically in section '[plugins]'. Found key 'ktlint' where 'shadowJar' was expected.
 ```
 
 ### Output of task `formatVersionCatalog`
