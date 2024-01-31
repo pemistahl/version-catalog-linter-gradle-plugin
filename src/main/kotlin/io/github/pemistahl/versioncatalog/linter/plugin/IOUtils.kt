@@ -30,9 +30,7 @@ internal fun readVersionCatalog(versionCatalogFile: File): VersionCatalog {
     var pluginsRead = false
 
     for ((lineNumber, line) in versionCatalogFile.readLines().withIndex()) {
-        val actualLineNumber = lineNumber + 1
         val trimmedLine = line.trim()
-        val trimmedLineIsNotEmpty = trimmedLine.isNotEmpty()
 
         if (trimmedLine == VersionCatalogSection.VERSIONS.label) {
             versionsRead = true
@@ -54,21 +52,26 @@ internal fun readVersionCatalog(versionCatalogFile: File): VersionCatalog {
             librariesRead = false
             bundlesRead = false
             pluginsRead = true
-        } else if (versionsRead && trimmedLineIsNotEmpty) {
-            versions.add(Pair(actualLineNumber..actualLineNumber, line))
-        } else if (librariesRead && trimmedLineIsNotEmpty) {
-            libraries.add(Pair(actualLineNumber..actualLineNumber, line))
-        } else if (bundlesRead && trimmedLineIsNotEmpty) {
-            if (line.contains("[")) {
-                bundles.add(Pair(actualLineNumber..actualLineNumber, line))
-            } else {
-                val (currentRange, currentLine) = bundles.removeAt(bundles.size - 1)
-                val newRange = currentRange.first..actualLineNumber
-                val newLine = currentLine + "\n" + line
-                bundles.add(Pair(newRange, newLine))
+        } else if (trimmedLine.isNotEmpty() && !trimmedLine.startsWith('#')) {
+            val actualLineNumber = lineNumber + 1
+            val element = Pair(actualLineNumber..actualLineNumber, line)
+
+            if (versionsRead) {
+                versions.add(element)
+            } else if (librariesRead) {
+                libraries.add(element)
+            } else if (bundlesRead) {
+                if (line.contains("[")) {
+                    bundles.add(element)
+                } else {
+                    val (currentRange, currentLine) = bundles.removeAt(bundles.size - 1)
+                    val newRange = currentRange.first..actualLineNumber
+                    val newLine = currentLine + "\n" + line
+                    bundles.add(Pair(newRange, newLine))
+                }
+            } else if (pluginsRead) {
+                plugins.add(element)
             }
-        } else if (pluginsRead && trimmedLineIsNotEmpty) {
-            plugins.add(Pair(actualLineNumber..actualLineNumber, line))
         }
     }
 

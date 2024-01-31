@@ -37,6 +37,17 @@ class VersionCatalogCheckerTest {
         )
 
         assertEquals(
+            emptyList(),
+            task.checkVersions(
+                listOf(
+                    1..1 to "byteBuddy = \"1.12.9\"",
+                    2..2 to "cache2k = \"2.0.0.Final\" # This is a comment.",
+                    3..3 to "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }",
+                ),
+            ),
+        )
+
+        assertEquals(
             listOf("Line 1: Entry with key 'byteBuddy' in section '[versions]' must not have leading whitespace."),
             task.checkVersions(
                 listOf(
@@ -158,6 +169,16 @@ class VersionCatalogCheckerTest {
                 listOf(
                     1..1 to "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
                     2..2 to "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" }",
+                ),
+            ),
+        )
+
+        assertEquals(
+            emptyList(),
+            task.checkLibraries(
+                listOf(
+                    1..1 to "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
+                    2..2 to "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" } # This is a comment.",
                 ),
             ),
         )
@@ -323,6 +344,30 @@ class VersionCatalogCheckerTest {
                     6..10 to
                         """
                         jgoodies = [
+                            "jgoodiesDesktop",
+                            "jgoodiesDialogs",
+                            "jgoodiesFramework"
+                        ]
+                        """.trimIndent(),
+                ),
+            ),
+        )
+
+        assertEquals(
+            emptyList(),
+            task.checkBundles(
+                listOf(
+                    1..5 to
+                        """
+                        groovy = [
+                            "groovy",
+                            "groovyTemplates", # This is a comment.
+                            "spock"
+                        ]
+                        """.trimIndent(),
+                    6..10 to
+                        """
+                        jgoodies = [ # This a another comment.
                             "jgoodiesDesktop",
                             "jgoodiesDialogs",
                             "jgoodiesFramework"
@@ -573,6 +618,16 @@ class VersionCatalogCheckerTest {
             task.checkPlugins(
                 listOf(
                     1..1 to "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" }",
+                    2..2 to "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }",
+                ),
+            ),
+        )
+
+        assertEquals(
+            emptyList(),
+            task.checkPlugins(
+                listOf(
+                    1..1 to "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" } # This is a comment.",
                     2..2 to "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }",
                 ),
             ),

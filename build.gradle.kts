@@ -24,7 +24,7 @@ plugins {
 }
 
 group = "io.github.pemistahl"
-version = "1.1.0"
+version = "1.0.3"
 
 kotlin {
     compilerOptions {

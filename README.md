@@ -19,7 +19,7 @@ Add the plugin to your Gradle build file.
 
 ```kotlin
 plugins {
-    id("io.github.pemistahl.version-catalog-linter") version "1.0.2"
+    id("io.github.pemistahl.version-catalog-linter") version "1.0.3"
 }
 ```
 
@@ -60,7 +60,8 @@ tasks.check {
 ## Example
 
 Below, you find examples for a totally messed up version catalog and how the output
-of the plugin's Gradle tasks looks like.
+of the plugin's Gradle tasks looks like. Comments are currently filtered out in the output.
+It is planned to preserve comments in a later release.
 
 ### Version catalog input
 
@@ -77,9 +78,10 @@ jgoodiesDesktop = { group = "com.jgoodies", name = "jgoodies-desktop", version =
 jgoodiesDialogs = { group = "com.jgoodies", name = "jgoodies-dialogs", version = "1.20.0" }
 antisamy = { group = "org.owasp.antisamy", name = "antisamy", version = "1.5.2" }
 antlr = { module = "antlr:antlr",    version = "2.7.7" }
+# This is a single-line comment.
 apacheHttpClient = { group = "org.apache.httpcomponents", name = "httpclient", version = "4.5.14" }
 apacheHttpCore = { group = "org.apache.httpcomponents", name = "httpcore", version = "4.4.16" }
-apacheHttpMime = {name = "httpmime", version = "4.5.14", group = "org.apache.httpcomponents" }
+apacheHttpMime = {name = "httpmime", version = "4.5.14", group = "org.apache.httpcomponents" } # This comment is for a key-value pair.
 
 groovyTemplates = {name = "groovy-templates", group = "org.codehaus.groovy", version.ref = "groovy" }
 

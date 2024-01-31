@@ -1,3 +1,10 @@
+## Version Catalog Linter 1.0.3 (released on Jan 31 2024)
+
+### Bug Fixes
+
+- The Gradle tasks failed when a single-line comment was part of a version catalog.
+  This has been fixed. (#5)
+
 ## Version Catalog Linter 1.0.2 (released on Jan 16 2024)
 
 ### Bug Fixes

@@ -27,16 +27,16 @@ class IOUtilsTest {
             VersionCatalog(
                 versions =
                     listOf(
-                        30..30 to "duns = \"V0\"",
-                        31..31 to "slf4j = { prefer = \"1.7.25\", strictly = \"[1.7, 1.8[\" }",
-                        32..32 to "   exact = \"1.0\"",
-                        33..33 to "groovy = \"2.5.7\"",
-                        34..34 to "axis =      \"1.3\"",
-                        35..35 to "ktlint = \"12.0.2\"",
-                        36..36 to "byteBuddy = \"1.12.9\"",
-                        37..37 to "springCore =   {require=\"4.2.9.RELEASE\",reject=[\"4.3.18.RELEASE\",\"4.3.16.RELEASE\"]     }",
-                        38..38 to "cache2k = \"2.0.0.Final\"",
-                        39..39 to "dockerJava = \"3.2.12\"",
+                        31..31 to "duns = \"V0\"",
+                        32..32 to "slf4j = { prefer = \"1.7.25\", strictly = \"[1.7, 1.8[\" }",
+                        33..33 to "   exact = \"1.0\"",
+                        34..34 to "groovy = \"2.5.7\"",
+                        35..35 to "axis =      \"1.3\"",
+                        36..36 to "ktlint = \"12.0.2\"",
+                        37..37 to "byteBuddy = \"1.12.9\"",
+                        38..38 to "springCore =   {require=\"4.2.9.RELEASE\",reject=[\"4.3.18.RELEASE\",\"4.3.16.RELEASE\"]     }",
+                        39..39 to "cache2k = \"2.0.0.Final\"",
+                        40..40 to "dockerJava = \"3.2.12\"",
                     ),
                 libraries =
                     listOf(
@@ -47,17 +47,18 @@ class IOUtilsTest {
                         10..10 to "jgoodiesDialogs = { group = \"com.jgoodies\", name = \"jgoodies-dialogs\", version = \"1.20.0\" }",
                         11..11 to "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" }",
                         12..12 to "antlr = { module = \"antlr:antlr\",    version = \"2.7.7\" }",
-                        13..13 to
+                        14..14 to
                             "apacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
-                        14..14 to "apacheHttpCore = { group = \"org.apache.httpcomponents\", name = \"httpcore\", version = \"4.4.16\" }",
-                        15..15 to "apacheHttpMime = {name = \"httpmime\", version = \"4.5.14\", group = \"org.apache.httpcomponents\" }",
-                        17..17 to
+                        15..15 to "apacheHttpCore = { group = \"org.apache.httpcomponents\", name = \"httpcore\", version = \"4.4.16\" }",
+                        16..16 to "apacheHttpMime = {name = \"httpmime\", version = \"4.5.14\", group = \"org.apache.httpcomponents\" } " +
+                            "# This comment is for a key-value pair.",
+                        18..18 to
                             "groovyTemplates = {name = \"groovy-templates\", group = \"org.codehaus.groovy\", version.ref = \"groovy\" }",
                     ),
                 bundles =
                     listOf(
-                        20..20 to "groovy    = [\"groovyTemplates\", \"groovy\"]",
-                        21..25 to
+                        21..21 to "groovy    = [\"groovyTemplates\", \"groovy\"]",
+                        22..26 to
                             """
                              jgoodies = [
                                 "jgoodiesDesktop",
@@ -68,8 +69,8 @@ class IOUtilsTest {
                     ),
                 plugins =
                     listOf(
-                        44..44 to "   shadowJar =          { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }",
-                        45..45 to "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }",
+                        45..45 to "   shadowJar =          { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }",
+                        46..46 to "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }",
                     ),
             )
 

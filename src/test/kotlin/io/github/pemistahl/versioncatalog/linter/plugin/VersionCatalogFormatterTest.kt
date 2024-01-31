@@ -100,7 +100,7 @@ class VersionCatalogFormatterTest {
                 2..2 to "duns = \"V0\"",
                 3..3 to "slf4j = { prefer = \"1.7.25\", strictly = \"[1.7, 1.8[\" }",
                 4..4 to "   exact = \"1.0\"",
-                5..5 to "groovy = \"2.5.7\"",
+                5..5 to "groovy = \"2.5.7\"   # This is a comment. ",
                 6..6 to "axis =      \"1.3\"",
                 7..7 to "ktlint = \"12.0.2\"",
                 8..8 to "byteBuddy = \"1.12.9\"    ",
@@ -132,7 +132,7 @@ class VersionCatalogFormatterTest {
                 19..19 to "  jgoodiesFramework             = \"com.jgoodies:jgoodies-framework:1.34.0\"",
                 20..20 to "jgoodiesDialogs = { group = \"com.jgoodies\", name = \"jgoodies-dialogs\", version = \"1.20.0\" }",
                 21..21 to "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" }",
-                22..22 to "antlr = { module = \"antlr:antlr\",    version = \"2.7.7\" }",
+                22..22 to "antlr = { module = \"antlr:antlr\",    version = \"2.7.7\" } #   This is a comment.",
                 23..23 to "apacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
                 24..24 to "apacheHttpCore = { group = \"org.apache.httpcomponents\", name = \"httpcore\", version = \"4.4.16\" }",
                 25..25 to "apacheHttpMime = {name = \"httpmime\", version = \"4.5.14\", group = \"org.apache.httpcomponents\" }",
@@ -157,7 +157,7 @@ class VersionCatalogFormatterTest {
     private fun createBundles(): Pair<List<Pair<IntRange, String>>, List<String>> {
         return Pair(
             listOf(
-                30..30 to "groovy    = [\"groovyTemplates\", \"groovy\"]",
+                30..30 to "groovy    = [\"groovyTemplates\", \"groovy\"]  # This is a comment.",
                 31..32 to " jgoodies = [    \"jgoodiesDesktop\",  \n            \"jgoodiesDialogs\",    \"jgoodiesFramework\"    ]",
             ),
             listOf(
@@ -182,7 +182,7 @@ class VersionCatalogFormatterTest {
         return Pair(
             listOf(
                 35..35 to "   shadowJar =          { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }  ",
-                36..36 to "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }",
+                36..36 to "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }  #  This is a comment.",
             ),
             listOf(
                 "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" }",
