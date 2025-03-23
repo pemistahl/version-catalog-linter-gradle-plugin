@@ -83,6 +83,8 @@ abstract class VersionCatalogChecker : DefaultTask() {
         errorMessages.addAll(checkWhitespace(libraries, VersionCatalogSection.LIBRARIES))
         errorMessages.addAll(checkAlphabeticSorting(libraries, VersionCatalogSection.LIBRARIES))
 
+        val bomDeclarations = getBomDeclarations(libraries)
+
         for ((lineNumbers, library) in libraries) {
             val parseResult = Toml.parse(library)
             val key = parseResult.keySet().iterator().next()
@@ -95,14 +97,36 @@ abstract class VersionCatalogChecker : DefaultTask() {
             } else if (parseResult.isTable(key)) {
                 val attributes = parseResult.getTable(key)!!.keySet().iterator()
                 val firstAttribute = attributes.next()
-                val secondAttribute = attributes.next()
-                val isModuleDefined = firstAttribute == "module" && secondAttribute.startsWith("version")
-                val isGroupAndNameDefined = firstAttribute == "group" && secondAttribute == "name"
+                val secondAttributeExists = attributes.hasNext()
 
-                if (!isModuleDefined && !isGroupAndNameDefined) {
-                    val message =
-                        "Attributes of library with key '$key' are not sorted correctly. $requiredOrder"
-                    errorMessages.add(ErrorMessage(lineNumbers, message))
+                val isModuleDefined = firstAttribute == "module"
+                val isGroupDefined = firstAttribute == "group"
+
+                if (secondAttributeExists) {
+                    val secondAttribute = attributes.next()
+
+                    val isModuleDefined = isModuleDefined && secondAttribute.startsWith("version")
+                    val isGroupAndNameDefined = isGroupDefined && secondAttribute == "name"
+                    if (!isModuleDefined && !isGroupAndNameDefined) {
+                        val message =
+                            "Attributes of library with key '$key' are not sorted correctly. $requiredOrder"
+                        errorMessages.add(ErrorMessage(lineNumbers, message))
+                    }
+                } else {
+                    if (!isModuleDefined && !isGroupDefined) {
+                        val message =
+                            "Attributes of library with key '$key' are not sorted correctly. $requiredOrder"
+                        errorMessages.add(ErrorMessage(lineNumbers, message))
+                    } else {
+                        val firstAttributeValue =
+                            parseResult.getTable(key)?.getString(firstAttribute)?.split(":")
+                                ?.first()
+                        if (firstAttributeValue !in bomDeclarations) {
+                            val message =
+                                "Attributes of library with key '$key' has no version defined or no bom declaration exists for '$firstAttributeValue'."
+                            errorMessages.add(ErrorMessage(lineNumbers, message))
+                        }
+                    }
                 }
             }
         }
@@ -178,7 +202,8 @@ abstract class VersionCatalogChecker : DefaultTask() {
             val key = parseResult.keySet().iterator().next()
 
             if (line.trimStart() != line) {
-                val message = "Entry with key '$key' in section '${section.label}' must not have leading whitespace."
+                val message =
+                    "Entry with key '$key' in section '${section.label}' must not have leading whitespace."
                 errorMessages.add(ErrorMessage(lineNumbers, message))
             }
 
@@ -235,5 +260,17 @@ abstract class VersionCatalogChecker : DefaultTask() {
             }
         }
         return errorMessages
+    }
+
+    private fun getBomDeclarations(libraries: List<Pair<IntRange, String>>): List<String> {
+        return libraries.filter {
+            it.second.contains("bom")
+        }.map {
+            Toml.parse(it.second).let { parseResult ->
+                val key = parseResult.keySet().first()
+                parseResult.getTable(key)?.getString("module") ?: parseResult.getTable(key)
+                    ?.getString("group")
+            }!!.split(":").first()
+        }
     }
 }
