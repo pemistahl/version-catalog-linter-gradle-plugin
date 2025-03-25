@@ -65,23 +65,6 @@ class VersionCatalogFormatterTest {
     }
 
     @Test
-    fun testNonVersionedPluginFormatting() {
-        val inputPlugins = listOf(
-            35..35 to "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\" }",
-            36..36 to "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }",
-        )
-        val expected = listOf(
-            "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\" }",
-            "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }",
-        )
-
-        assertEquals(
-            expected,
-            task.formatPlugins(inputPlugins),
-        )
-    }
-
-    @Test
     fun testJoinCatalogSections() {
         val outputCatalogURL = javaClass.getResource("/outputVersionCatalog.toml")
         val expectedOutputCatalog = File(outputCatalogURL.toURI()).readText()
@@ -200,10 +183,12 @@ class VersionCatalogFormatterTest {
             listOf(
                 35..35 to "   shadowJar =          { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }  ",
                 36..36 to "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }  #  This is a comment.",
+                37..37 to "versionCatalogLinter = { id = \"io.github.pemistahl.version-catalog-linter\" }",
             ),
             listOf(
                 "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" }",
                 "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }",
+                "versionCatalogLinter = { id = \"io.github.pemistahl.version-catalog-linter\" }",
             ),
         )
     }
