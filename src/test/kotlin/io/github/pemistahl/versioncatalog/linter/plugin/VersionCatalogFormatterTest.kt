@@ -183,10 +183,12 @@ class VersionCatalogFormatterTest {
             listOf(
                 35..35 to "   shadowJar =          { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }  ",
                 36..36 to "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }  #  This is a comment.",
+                37..37 to "versionCatalogLinter = { id = \"io.github.pemistahl.version-catalog-linter\" }",
             ),
             listOf(
                 "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" }",
                 "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }",
+                "versionCatalogLinter = { id = \"io.github.pemistahl.version-catalog-linter\" }",
             ),
         )
     }

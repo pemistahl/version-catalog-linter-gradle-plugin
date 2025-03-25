@@ -137,6 +137,7 @@ class IOUtilsTest {
                     listOf(
                         38..38 to "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" }",
                         39..39 to "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }",
+                        40..40 to "versionCatalogLinter = { id = \"io.github.pemistahl.version-catalog-linter\" }",
                     ),
             )
 
