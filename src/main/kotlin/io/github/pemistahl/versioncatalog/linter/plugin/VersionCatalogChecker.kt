@@ -83,17 +83,19 @@ abstract class VersionCatalogChecker : DefaultTask() {
         errorMessages.addAll(checkWhitespace(libraries, VersionCatalogSection.LIBRARIES))
         errorMessages.addAll(checkAlphabeticSorting(libraries, VersionCatalogSection.LIBRARIES))
 
-        val bomDeclarations = getBomDeclarations(libraries)
-
         for ((lineNumbers, library) in libraries) {
             val parseResult = Toml.parse(library)
             val key = parseResult.keySet().iterator().next()
+
             val requiredOrder = "Required order: [module | group], name (, version(.ref))"
+            val tableNotationMessage = "Use table notation instead of string notation for library with key '$key'. $requiredOrder"
+            val notSortedMessage = "Attributes of library with key '$key' are not sorted correctly. $requiredOrder"
+            val noBomMessage =
+                "Attributes of library with key '$key' has no version defined " +
+                    "or no bom declaration exists for '%s'."
 
             if (parseResult.isString(key)) {
-                val message =
-                    "Use table notation instead of string notation for library with key '$key'. $requiredOrder"
-                errorMessages.add(ErrorMessage(lineNumbers, message))
+                errorMessages.add(ErrorMessage(lineNumbers, tableNotationMessage))
             } else if (parseResult.isTable(key)) {
                 val attributes = parseResult.getTable(key)!!.keySet().iterator()
                 val firstAttribute = attributes.next()
@@ -105,28 +107,25 @@ abstract class VersionCatalogChecker : DefaultTask() {
                 if (secondAttributeExists) {
                     val secondAttribute = attributes.next()
 
-                    val isModuleDefined = isModuleDefined && secondAttribute.startsWith("version")
+                    val isModuleAndVersionDefined = isModuleDefined && secondAttribute.startsWith("version")
                     val isGroupAndNameDefined = isGroupDefined && secondAttribute == "name"
-                    if (!isModuleDefined && !isGroupAndNameDefined) {
-                        val message =
-                            "Attributes of library with key '$key' are not sorted correctly. $requiredOrder"
-                        errorMessages.add(ErrorMessage(lineNumbers, message))
-                    }
-                } else {
-                    if (!isModuleDefined && !isGroupDefined) {
-                        val message =
-                            "Attributes of library with key '$key' are not sorted correctly. $requiredOrder"
-                        errorMessages.add(ErrorMessage(lineNumbers, message))
-                    } else {
-                        val firstAttributeValue =
-                            parseResult.getTable(key)?.getString(firstAttribute)?.split(":")
-                                ?.first()
-                        if (firstAttributeValue !in bomDeclarations) {
-                            val message =
-                                "Attributes of library with key '$key' has no version defined " +
-                                    "or no bom declaration exists for '$firstAttributeValue'."
-                            errorMessages.add(ErrorMessage(lineNumbers, message))
+
+                    if (!isModuleAndVersionDefined && !isGroupAndNameDefined) {
+                        errorMessages.add(ErrorMessage(lineNumbers, notSortedMessage))
+                    } else if (isGroupAndNameDefined && !attributes.hasNext()) {
+                        val firstAttributeValue = parseResult.getTable(key)?.getString(firstAttribute)
+                        if (firstAttributeValue !in getBomDeclarations(libraries)) {
+                            errorMessages.add(ErrorMessage(lineNumbers, noBomMessage.format(firstAttributeValue)))
                         }
+                    }
+                } else if (!isModuleDefined && !isGroupDefined) {
+                    errorMessages.add(ErrorMessage(lineNumbers, notSortedMessage))
+                } else {
+                    val firstAttributeValue =
+                        parseResult.getTable(key)?.getString(firstAttribute)?.split(":")
+                            ?.first()
+                    if (firstAttributeValue !in getBomDeclarations(libraries)) {
+                        errorMessages.add(ErrorMessage(lineNumbers, noBomMessage.format(firstAttributeValue)))
                     }
                 }
             }
@@ -189,6 +188,18 @@ abstract class VersionCatalogChecker : DefaultTask() {
         }
         errorMessages.sort()
         return errorMessages
+    }
+
+    internal fun getBomDeclarations(libraries: List<Pair<IntRange, String>>): List<String> {
+        return libraries.filter {
+            it.second.contains("-bom")
+        }.map {
+            Toml.parse(it.second).let { parseResult ->
+                val key = parseResult.keySet().first()
+                parseResult.getTable(key)?.getString("module") ?: parseResult.getTable(key)
+                    ?.getString("group")
+            }!!.split(":").first()
+        }
     }
 
     private fun checkWhitespace(
@@ -261,17 +272,5 @@ abstract class VersionCatalogChecker : DefaultTask() {
             }
         }
         return errorMessages
-    }
-
-    private fun getBomDeclarations(libraries: List<Pair<IntRange, String>>): List<String> {
-        return libraries.filter {
-            it.second.contains("bom")
-        }.map {
-            Toml.parse(it.second).let { parseResult ->
-                val key = parseResult.keySet().first()
-                parseResult.getTable(key)?.getString("module") ?: parseResult.getTable(key)
-                    ?.getString("group")
-            }!!.split(":").first()
-        }
     }
 }
