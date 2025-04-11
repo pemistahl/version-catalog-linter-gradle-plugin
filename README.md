@@ -7,7 +7,7 @@
 ## What does this plugin do?
 
 This plugin helps to enforce a consistent formatting in
-[Gradle version catalog TOML files](https://docs.gradle.org/current/userguide/platforms.html#sub:conventional-dependencies-toml).
+[Gradle version catalog TOML files](https://docs.gradle.org/current/userguide/version_catalogs.html).
 It provides two Gradle tasks:
 1. `checkVersionCatalog` looks for various formatting errors and reports all found errors sorted by line number.
 The `check` task automatically depends on `checkVersionCatalog`, so it is easy to add this plugin to continuous integration pipelines.
@@ -19,7 +19,7 @@ Add the plugin to your Gradle build file.
 
 ```kotlin
 plugins {
-    id("io.github.pemistahl.version-catalog-linter") version "1.0.3"
+    id("io.github.pemistahl.version-catalog-linter") version "1.0.4"
 }
 ```
 
