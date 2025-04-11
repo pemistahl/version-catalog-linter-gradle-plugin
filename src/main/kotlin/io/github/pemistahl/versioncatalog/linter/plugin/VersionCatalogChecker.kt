@@ -86,23 +86,47 @@ abstract class VersionCatalogChecker : DefaultTask() {
         for ((lineNumbers, library) in libraries) {
             val parseResult = Toml.parse(library)
             val key = parseResult.keySet().iterator().next()
+
             val requiredOrder = "Required order: [module | group], name (, version(.ref))"
+            val tableNotationMessage = "Use table notation instead of string notation for library with key '$key'. $requiredOrder"
+            val notSortedMessage = "Attributes of library with key '$key' are not sorted correctly. $requiredOrder"
+            val noBomMessage =
+                "Attributes of library with key '$key' has no version defined " +
+                    "or no bom declaration exists for '%s'."
 
             if (parseResult.isString(key)) {
-                val message =
-                    "Use table notation instead of string notation for library with key '$key'. $requiredOrder"
-                errorMessages.add(ErrorMessage(lineNumbers, message))
+                errorMessages.add(ErrorMessage(lineNumbers, tableNotationMessage))
             } else if (parseResult.isTable(key)) {
                 val attributes = parseResult.getTable(key)!!.keySet().iterator()
                 val firstAttribute = attributes.next()
-                val secondAttribute = attributes.next()
-                val isModuleDefined = firstAttribute == "module" && secondAttribute.startsWith("version")
-                val isGroupAndNameDefined = firstAttribute == "group" && secondAttribute == "name"
+                val secondAttributeExists = attributes.hasNext()
 
-                if (!isModuleDefined && !isGroupAndNameDefined) {
-                    val message =
-                        "Attributes of library with key '$key' are not sorted correctly. $requiredOrder"
-                    errorMessages.add(ErrorMessage(lineNumbers, message))
+                val isModuleDefined = firstAttribute == "module"
+                val isGroupDefined = firstAttribute == "group"
+
+                if (secondAttributeExists) {
+                    val secondAttribute = attributes.next()
+
+                    val isModuleAndVersionDefined = isModuleDefined && secondAttribute.startsWith("version")
+                    val isGroupAndNameDefined = isGroupDefined && secondAttribute == "name"
+
+                    if (!isModuleAndVersionDefined && !isGroupAndNameDefined) {
+                        errorMessages.add(ErrorMessage(lineNumbers, notSortedMessage))
+                    } else if (isGroupAndNameDefined && !attributes.hasNext()) {
+                        val firstAttributeValue = parseResult.getTable(key)?.getString(firstAttribute)
+                        if (firstAttributeValue !in getBomDeclarations(libraries)) {
+                            errorMessages.add(ErrorMessage(lineNumbers, noBomMessage.format(firstAttributeValue)))
+                        }
+                    }
+                } else if (!isModuleDefined && !isGroupDefined) {
+                    errorMessages.add(ErrorMessage(lineNumbers, notSortedMessage))
+                } else {
+                    val firstAttributeValue =
+                        parseResult.getTable(key)?.getString(firstAttribute)?.split(":")
+                            ?.first()
+                    if (firstAttributeValue !in getBomDeclarations(libraries)) {
+                        errorMessages.add(ErrorMessage(lineNumbers, noBomMessage.format(firstAttributeValue)))
+                    }
                 }
             }
         }
@@ -166,6 +190,18 @@ abstract class VersionCatalogChecker : DefaultTask() {
         return errorMessages
     }
 
+    internal fun getBomDeclarations(libraries: List<Pair<IntRange, String>>): List<String> {
+        return libraries.filter {
+            it.second.contains("-bom")
+        }.map {
+            Toml.parse(it.second).let { parseResult ->
+                val key = parseResult.keySet().first()
+                parseResult.getTable(key)?.getString("module") ?: parseResult.getTable(key)
+                    ?.getString("group")
+            }!!.split(":").first()
+        }
+    }
+
     private fun checkWhitespace(
         lines: List<Pair<IntRange, String>>,
         section: VersionCatalogSection,
@@ -178,7 +214,8 @@ abstract class VersionCatalogChecker : DefaultTask() {
             val key = parseResult.keySet().iterator().next()
 
             if (line.trimStart() != line) {
-                val message = "Entry with key '$key' in section '${section.label}' must not have leading whitespace."
+                val message =
+                    "Entry with key '$key' in section '${section.label}' must not have leading whitespace."
                 errorMessages.add(ErrorMessage(lineNumbers, message))
             }
 

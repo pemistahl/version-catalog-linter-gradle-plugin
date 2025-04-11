@@ -204,6 +204,99 @@ class VersionCatalogCheckerTest {
         )
 
         assertEquals(
+            emptyList(),
+            task.checkLibraries(
+                listOf(
+                    1..1 to "koin-bom = { module = \"io.insert-koin:koin-bom\", version.ref = \"koin-bom\" }",
+                    2..2 to "koin-core = { module = \"io.insert-koin:koin-core\" }",
+                ),
+            ),
+        )
+
+        assertEquals(
+            listOf(
+                "Line 1: Attributes of library with key 'koin-bom' are not sorted correctly. " +
+                    "Required order: [module | group], name (, version(.ref))",
+            ),
+            task.checkLibraries(
+                listOf(
+                    1..1 to "koin-bom = { version.ref = \"koin-bom\", module = \"io.insert-koin:koin-bom\" }",
+                    2..2 to "koin-core = { module = \"io.insert-koin:koin-core\" }",
+                ),
+            ).map { it.toString() },
+        )
+
+        assertEquals(
+            emptyList(),
+            task.checkLibraries(
+                listOf(
+                    1..1 to "koin-bom = { group = \"io.insert-koin\", name = \"koin-bom\", version.ref = \"koin-bom\" }",
+                    2..2 to "koin-core = { group = \"io.insert-koin\", name = \"koin-core\" }",
+                ),
+            ),
+        )
+
+        assertEquals(
+            listOf(
+                "Line 1: Attributes of library with key 'koin-bom' are not sorted correctly. " +
+                    "Required order: [module | group], name (, version(.ref))",
+                "Line 2: Attributes of library with key 'koin-core' are not sorted correctly. " +
+                    "Required order: [module | group], name (, version(.ref))",
+            ),
+            task.checkLibraries(
+                listOf(
+                    1..1 to "koin-bom = { version.ref = \"koin-bom\", group = \"io.insert-koin\", name = \"koin-bom\" }",
+                    2..2 to "koin-core = { name = \"koin-core\", group = \"io.insert-koin\" }",
+                ),
+            ).map { it.toString() },
+        )
+
+        assertEquals(
+            listOf(
+                "Line 1: Attributes of library with key 'koin-core' has no version defined or " +
+                    "no bom declaration exists for 'io.insert-koin'.",
+                "Line 2: Attributes of library with key 'koin-test' has no version defined or " +
+                    "no bom declaration exists for 'io.insert-koin'.",
+            ),
+            task.checkLibraries(
+                listOf(
+                    1..1 to "koin-core = { module = \"io.insert-koin:koin-core\" }",
+                    2..2 to "koin-test = { module = \"io.insert-koin:koin-test\" }",
+                ),
+            ).map { it.toString() },
+        )
+
+        assertEquals(
+            listOf(
+                "Line 1: Attributes of library with key 'koin-core' has no version defined or " +
+                    "no bom declaration exists for 'io.insert-koin'.",
+                "Line 2: Attributes of library with key 'koin-test' has no version defined or " +
+                    "no bom declaration exists for 'io.insert-koin'.",
+            ),
+            task.checkLibraries(
+                listOf(
+                    1..1 to "koin-core = { group = \"io.insert-koin\", name = \"koin-core\" }",
+                    2..2 to "koin-test = { group = \"io.insert-koin\", name = \"koin-test\" }",
+                ),
+            ).map { it.toString() },
+        )
+
+        assertEquals(
+            listOf(
+                "Line 1: Attributes of library with key 'koin-core' has no version defined or " +
+                    "no bom declaration exists for 'io.insert-koin'.",
+                "Line 2: Attributes of library with key 'koin-test' are not sorted correctly. " +
+                    "Required order: [module | group], name (, version(.ref))",
+            ),
+            task.checkLibraries(
+                listOf(
+                    1..1 to "koin-core = { group = \"io.insert-koin\", name = \"koin-core\" }",
+                    2..2 to "koin-test = { name = \"koin-test\", group = \"io.insert-koin\" }",
+                ),
+            ).map { it.toString() },
+        )
+
+        assertEquals(
             listOf(
                 "Line 1: Attributes of library with key 'activation' are not sorted correctly. " +
                     "Required order: [module | group], name (, version(.ref))",
@@ -711,6 +804,39 @@ class VersionCatalogCheckerTest {
                     2..2 to " ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }",
                 ),
             ).map { it.toString() },
+        )
+    }
+
+    @Test
+    fun testGetBomDeclarations() {
+        assertEquals(
+            listOf("io.insert-koin"),
+            task.getBomDeclarations(
+                listOf(
+                    1..1 to "koin-bom = { module = \"io.insert-koin:koin-bom\", version.ref = \"koin-bom\" }",
+                    2..2 to "koin-core = { module = \"io.insert-koin:koin-core\" }",
+                ),
+            ),
+        )
+
+        assertEquals(
+            listOf("io.insert-koin"),
+            task.getBomDeclarations(
+                listOf(
+                    1..1 to "koin-bom = { group = \"io.insert-koin\", name = \"koin-bom\", version.ref = \"koin-bom\" }",
+                    2..2 to "koin-core = { name = \"koin-core\", group = \"io.insert-koin\" }",
+                ),
+            ),
+        )
+
+        assertEquals(
+            emptyList(),
+            task.getBomDeclarations(
+                listOf(
+                    1..1 to "koin-core = { module = \"io.insert-koin:koin-core\" }",
+                    2..2 to "koin-test = { module = \"io.insert-koin:koin-test\" }",
+                ),
+            ),
         )
     }
 

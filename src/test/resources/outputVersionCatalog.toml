@@ -22,6 +22,9 @@ groovyTemplates = { group = "org.codehaus.groovy", name = "groovy-templates", ve
 jgoodiesDesktop = { group = "com.jgoodies", name = "jgoodies-desktop", version = "1.12.1" }
 jgoodiesDialogs = { group = "com.jgoodies", name = "jgoodies-dialogs", version = "1.20.0" }
 jgoodiesFramework = { group = "com.jgoodies", name = "jgoodies-framework", version = "1.34.0" }
+koin-bom = { group = "io.insert-koin", name = "koin-bom", version = "4.0.2" }
+koin-core = { group = "io.insert-koin", name = "koin-core" }
+koin-test = { group = "io.insert-koin", name = "koin-test" }
 
 [bundles]
 groovy = [
