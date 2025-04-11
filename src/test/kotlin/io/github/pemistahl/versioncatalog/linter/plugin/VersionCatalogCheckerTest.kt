@@ -215,13 +215,15 @@ class VersionCatalogCheckerTest {
 
         assertEquals(
             listOf(
-                "Line 1: Attributes of library with key 'koin-core' has no version defined or no bom declaration exists for 'io.insert-koin'.",
-                "Line 2: Attributes of library with key 'koin-test' has no version defined or no bom declaration exists for 'io.insert-koin'."
+                "Line 1: Attributes of library with key 'koin-core' has no version defined or " +
+                    "no bom declaration exists for 'io.insert-koin'.",
+                "Line 2: Attributes of library with key 'koin-test' has no version defined or " +
+                    "no bom declaration exists for 'io.insert-koin'.",
             ),
             task.checkLibraries(
                 listOf(
                     1..1 to "koin-core = { module = \"io.insert-koin:koin-core\" }",
-                    2..2 to "koin-test = { module = \"io.insert-koin:koin-test\" }"
+                    2..2 to "koin-test = { module = \"io.insert-koin:koin-test\" }",
                 ),
             ).map { it.toString() },
         )

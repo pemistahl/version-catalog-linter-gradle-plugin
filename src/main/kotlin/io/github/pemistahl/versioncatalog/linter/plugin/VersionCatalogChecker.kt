@@ -123,7 +123,8 @@ abstract class VersionCatalogChecker : DefaultTask() {
                                 ?.first()
                         if (firstAttributeValue !in bomDeclarations) {
                             val message =
-                                "Attributes of library with key '$key' has no version defined or no bom declaration exists for '$firstAttributeValue'."
+                                "Attributes of library with key '$key' has no version defined " +
+                                    "or no bom declaration exists for '$firstAttributeValue'."
                             errorMessages.add(ErrorMessage(lineNumbers, message))
                         }
                     }
