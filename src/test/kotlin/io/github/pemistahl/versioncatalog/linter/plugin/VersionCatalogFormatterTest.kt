@@ -86,12 +86,7 @@ class VersionCatalogFormatterTest {
 
     private fun createTask(): VersionCatalogFormatter {
         val project = ProjectBuilder.builder().build()
-        val task =
-            project.task(
-                mapOf("type" to VersionCatalogFormatter::class.java),
-                "formatVersionCatalog",
-            ) as VersionCatalogFormatter
-        return task
+        return project.tasks.register("formatVersionCatalog", VersionCatalogFormatter::class.java).get()
     }
 
     private fun createVersions(): Pair<List<Pair<IntRange, String>>, List<String>> {

@@ -27,7 +27,7 @@ class VersionCatalogLinterPluginTest {
     @Test
     fun testPluginIsCorrectlyAppliedToProject() {
         val project = ProjectBuilder.builder().build()
-        val checkTask = project.task("check")
+        val checkTask = project.tasks.register("check").get()
         val defaultVersionCatalogFile = File(project.projectDir, "gradle/libs.versions.toml")
         val customVersionCatalogFile = File(project.projectDir, "libraries.toml")
 

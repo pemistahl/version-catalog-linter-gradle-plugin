@@ -842,11 +842,6 @@ class VersionCatalogCheckerTest {
 
     private fun createTask(): VersionCatalogChecker {
         val project = ProjectBuilder.builder().build()
-        val task =
-            project.task(
-                mapOf("type" to VersionCatalogChecker::class.java),
-                "checkVersionCatalog",
-            ) as VersionCatalogChecker
-        return task
+        return project.tasks.register("checkVersionCatalog", VersionCatalogChecker::class.java).get()
     }
 }

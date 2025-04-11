@@ -24,7 +24,7 @@ plugins {
 }
 
 group = "io.github.pemistahl"
-version = "1.0.3"
+version = "1.0.4"
 
 kotlin {
     compilerOptions {
@@ -53,8 +53,6 @@ testing {
         val test by getting(JvmTestSuite::class)
 
         register<JvmTestSuite>("functionalTest") {
-            testType = TestSuiteType.FUNCTIONAL_TEST
-
             dependencies {
                 implementation(project())
             }
