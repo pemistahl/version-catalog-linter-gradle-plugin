@@ -115,6 +115,8 @@ abstract class VersionCatalogFormatter : DefaultTask() {
                     formattedPlugin = "$formattedPlugin, version = \"$version\" }"
                 } else if (version is TomlTable) {
                     formattedPlugin = "$formattedPlugin, version.ref = \"${version.get("ref")}\" }"
+                } else if (version == null) {
+                    formattedPlugin = "$formattedPlugin }"
                 }
 
                 formattedPlugin

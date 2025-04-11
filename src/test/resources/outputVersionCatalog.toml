@@ -40,3 +40,4 @@ jgoodies = [
 [plugins]
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 shadowJar = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
+versionCatalogLinter = { id = "io.github.pemistahl.version-catalog-linter" }
