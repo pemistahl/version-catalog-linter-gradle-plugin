@@ -113,18 +113,20 @@ abstract class VersionCatalogChecker : DefaultTask() {
                     if (!isModuleAndVersionDefined && !isGroupAndNameDefined) {
                         errorMessages.add(ErrorMessage(lineNumbers, notSortedMessage))
                     } else if (isGroupAndNameDefined && !attributes.hasNext()) {
+                        val bomDeclarations = getBomDeclarations(libraries)
                         val firstAttributeValue = parseResult.getTable(key)?.getString(firstAttribute)
-                        if (firstAttributeValue !in getBomDeclarations(libraries)) {
+                        if (!isGroupPartOfBomDeclaration(bomDeclarations, firstAttributeValue)) {
                             errorMessages.add(ErrorMessage(lineNumbers, noBomMessage.format(firstAttributeValue)))
                         }
                     }
                 } else if (!isModuleDefined && !isGroupDefined) {
                     errorMessages.add(ErrorMessage(lineNumbers, notSortedMessage))
                 } else {
+                    val bomDeclarations = getBomDeclarations(libraries)
                     val firstAttributeValue =
                         parseResult.getTable(key)?.getString(firstAttribute)?.split(":")
                             ?.first()
-                    if (firstAttributeValue !in getBomDeclarations(libraries)) {
+                    if (!isGroupPartOfBomDeclaration(bomDeclarations, firstAttributeValue)) {
                         errorMessages.add(ErrorMessage(lineNumbers, noBomMessage.format(firstAttributeValue)))
                     }
                 }
@@ -272,5 +274,16 @@ abstract class VersionCatalogChecker : DefaultTask() {
             }
         }
         return errorMessages
+    }
+
+    private fun isGroupPartOfBomDeclaration(
+        bomDeclarations: List<String>,
+        group: String?,
+    ): Boolean {
+        val customGroupToBomMapping =
+            mapOf(
+                "io.rest-assured" to "io.quarkus.platform",
+            )
+        return group != null && bomDeclarations.any { it.contains(group) || it == customGroupToBomMapping[group] }
     }
 }

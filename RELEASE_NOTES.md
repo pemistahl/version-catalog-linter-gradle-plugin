@@ -1,3 +1,10 @@
+## Version Catalog Linter 1.0.5 (released on Apr 14 2025)
+
+### Bug Fixes
+
+- The previous release did not correctly identify all possible formats of BOM declarations.
+  This has been fixed.
+
 ## Version Catalog Linter 1.0.4 (released on Apr 11 2025)
 
 ### Bug Fixes

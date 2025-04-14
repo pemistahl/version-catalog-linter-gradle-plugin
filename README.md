@@ -19,7 +19,7 @@ Add the plugin to your Gradle build file.
 
 ```kotlin
 plugins {
-    id("io.github.pemistahl.version-catalog-linter") version "1.0.4"
+    id("io.github.pemistahl.version-catalog-linter") version "1.0.5"
 }
 ```
 

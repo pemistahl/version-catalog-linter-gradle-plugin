@@ -207,6 +207,36 @@ class VersionCatalogCheckerTest {
             emptyList(),
             task.checkLibraries(
                 listOf(
+                    1..1 to "quarkus = { module = \"io.quarkus.platform:quarkus-bom\", version = \"3.21.2\" }",
+                    2..2 to "quarkusArc = { module = \"io.quarkus:quarkus-arc\" }",
+                ),
+            ),
+        )
+
+        assertEquals(
+            emptyList(),
+            task.checkLibraries(
+                listOf(
+                    1..1 to "quarkus = { group = \"io.quarkus.platform\", name = \"quarkus-bom\", version = \"3.21.2\" }",
+                    2..2 to "quarkusArc = { group = \"io.quarkus\", name = \"quarkus-arc\" }",
+                ),
+            ),
+        )
+
+        assertEquals(
+            emptyList(),
+            task.checkLibraries(
+                listOf(
+                    1..1 to "quarkus = { module = \"io.quarkus.platform:quarkus-bom\", version = \"3.21.2\" }",
+                    2..2 to "restAssured = { module = \"io.rest-assured:rest-assured\" }",
+                ),
+            ),
+        )
+
+        assertEquals(
+            emptyList(),
+            task.checkLibraries(
+                listOf(
                     1..1 to "koin-bom = { module = \"io.insert-koin:koin-bom\", version.ref = \"koin-bom\" }",
                     2..2 to "koin-core = { module = \"io.insert-koin:koin-core\" }",
                 ),
