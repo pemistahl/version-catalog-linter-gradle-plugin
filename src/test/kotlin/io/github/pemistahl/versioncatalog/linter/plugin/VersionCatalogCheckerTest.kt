@@ -129,7 +129,7 @@ class VersionCatalogCheckerTest {
                     "Found key 'cache2k' where 'byteBuddy' was expected.",
                 "Line 2: Entries are not sorted alphabetically in section '[versions]'. " +
                     "Found key 'byteBuddy' where 'cache2k' was expected.",
-                "Line 3: Attributes of version with key 'slf4j' are not sorted correctly. " +
+                "Line 3: Version attributes of entry with key 'slf4j' are not sorted correctly. " +
                     "Required order: strictly, require, prefer, reject",
             ),
             task.checkVersions(
@@ -147,9 +147,9 @@ class VersionCatalogCheckerTest {
                     "Found key 'cache2k' where 'byteBuddy' was expected.",
                 "Line 2: Entries are not sorted alphabetically in section '[versions]'. " +
                     "Found key 'byteBuddy' where 'cache2k' was expected.",
-                "Line 3: Attributes of version with key 'slf4j' are not sorted correctly. " +
-                    "Required order: strictly, require, prefer, reject",
                 "Line 3: Entry with key 'slf4j' in section '[versions]' must not have two or more adjacent whitespace characters.",
+                "Line 3: Version attributes of entry with key 'slf4j' are not sorted correctly. " +
+                    "Required order: strictly, require, prefer, reject",
             ),
             task.checkVersions(
                 listOf(
@@ -181,6 +181,31 @@ class VersionCatalogCheckerTest {
                     2..2 to "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" } # This is a comment.",
                 ),
             ),
+        )
+
+        assertEquals(
+            emptyList(),
+            task.checkLibraries(
+                listOf(
+                    1..1 to "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
+                    2..2 to "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", " +
+                        "version = { strictly = \"[1.5, 1.6[\", prefer = \"1.5.2\" } }",
+                ),
+            ),
+        )
+
+        assertEquals(
+            listOf(
+                "Line 2: Version attributes of entry with key 'antisamy' are not sorted correctly. " +
+                    "Required order: strictly, require, prefer, reject",
+            ),
+            task.checkLibraries(
+                listOf(
+                    1..1 to "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
+                    2..2 to "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", " +
+                        "version = { prefer = \"1.5.2\", strictly = \"[1.5, 1.6[\" } }",
+                ),
+            ).map { it.toString() },
         )
 
         assertEquals(

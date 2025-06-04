@@ -22,6 +22,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
 import org.tomlj.Toml
+import org.tomlj.TomlTable
 import java.io.File
 
 abstract class VersionCatalogChecker : DefaultTask() {
@@ -55,21 +56,8 @@ abstract class VersionCatalogChecker : DefaultTask() {
             val key = parseResult.keySet().iterator().next()
 
             if (parseResult.isTable(key)) {
-                val attributes = parseResult.getTable(key)!!.keySet().toList()
-                val attributeIndices =
-                    listOf(
-                        attributes.indexOf("strictly"),
-                        attributes.indexOf("require"),
-                        attributes.indexOf("prefer"),
-                        attributes.indexOf("reject"),
-                    ).filter { it > -1 }
-
-                if (attributeIndices != attributeIndices.sorted()) {
-                    val message =
-                        "Attributes of version with key '$key' are not sorted correctly. " +
-                            "Required order: strictly, require, prefer, reject"
-                    errorMessages.add(ErrorMessage(lineNumbers, message))
-                }
+                val versionTable = parseResult.getTableOrEmpty(key)
+                errorMessages.addAll(checkRichVersions(versionTable, key, lineNumbers))
             }
         }
 
@@ -97,7 +85,14 @@ abstract class VersionCatalogChecker : DefaultTask() {
             if (parseResult.isString(key)) {
                 errorMessages.add(ErrorMessage(lineNumbers, tableNotationMessage))
             } else if (parseResult.isTable(key)) {
-                val attributes = parseResult.getTable(key)!!.keySet().iterator()
+                val libraryTable = parseResult.getTableOrEmpty(key)
+
+                if (libraryTable.isTable("version")) {
+                    val versionTable = libraryTable.getTableOrEmpty("version")
+                    errorMessages.addAll(checkRichVersions(versionTable, key, lineNumbers))
+                }
+
+                val attributes = libraryTable.keySet().iterator()
                 val firstAttribute = attributes.next()
                 val secondAttributeExists = attributes.hasNext()
 
@@ -272,6 +267,30 @@ abstract class VersionCatalogChecker : DefaultTask() {
                         "Found key '$lineKey' where '$sortedLineKey' was expected."
                 errorMessages.add(ErrorMessage(lineNumbers, message))
             }
+        }
+        return errorMessages
+    }
+
+    private fun checkRichVersions(
+        versionTable: TomlTable,
+        key: String,
+        lineNumbers: IntRange,
+    ): List<ErrorMessage> {
+        val errorMessages = mutableListOf<ErrorMessage>()
+        val attributes = versionTable.keySet().toList()
+        val attributeIndices =
+            listOf(
+                attributes.indexOf("strictly"),
+                attributes.indexOf("require"),
+                attributes.indexOf("prefer"),
+                attributes.indexOf("reject"),
+            ).filter { it > -1 }
+
+        if (attributeIndices != attributeIndices.sorted()) {
+            val message =
+                "Version attributes of entry with key '$key' are not sorted correctly. " +
+                    "Required order: strictly, require, prefer, reject"
+            errorMessages.add(ErrorMessage(lineNumbers, message))
         }
         return errorMessages
     }

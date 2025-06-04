@@ -21,7 +21,6 @@ import org.gradle.api.provider.Property
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
 import org.tomlj.Toml
-import org.tomlj.TomlParseResult
 import org.tomlj.TomlTable
 import java.io.File
 
@@ -178,45 +177,43 @@ abstract class VersionCatalogFormatter : DefaultTask() {
     }
 
     private fun parseVersionTable(
-        parseResult: TomlParseResult,
+        parseResult: TomlTable,
         key: String,
     ): String {
         val stringKeys = listOf("strictly", "require", "prefer")
         val arrayKey = "reject"
+        val versionTable = parseResult.getTable(key) ?: parseResult
+        var value = "$key = {"
+        val tableValues = mutableListOf<String>()
 
-        return parseResult.getTable(key)!!.let { values ->
-            var value = "$key = {"
-            val tableValues = mutableListOf<String>()
-
-            for (stringKey in stringKeys) {
-                if (values.isString(stringKey)) {
-                    values.getString(stringKey)!!.let { v ->
-                        tableValues.add("$stringKey = \"$v\"")
-                    }
+        for (stringKey in stringKeys) {
+            if (versionTable.isString(stringKey)) {
+                versionTable.getString(stringKey)!!.let { v ->
+                    tableValues.add("$stringKey = \"$v\"")
                 }
             }
-
-            if (values.isArray(arrayKey)) {
-                val versionsArray =
-                    values.getArray(arrayKey)!!.toList()
-                        .asSequence()
-                        .map { v -> "\"$v\"" }
-                        .sorted()
-                        .toList()
-                tableValues.add("$arrayKey = [ ${versionsArray.joinToString(", ")} ]")
-            }
-
-            if (tableValues.isNotEmpty()) {
-                value = "$value ${tableValues.joinToString(", ")}"
-            }
-
-            value = "$value }"
-            value
         }
+
+        if (versionTable.isArray(arrayKey)) {
+            val versionsArray =
+                versionTable.getArray(arrayKey)!!.toList()
+                    .asSequence()
+                    .map { v -> "\"$v\"" }
+                    .sorted()
+                    .toList()
+            tableValues.add("$arrayKey = [ ${versionsArray.joinToString(", ")} ]")
+        }
+
+        if (tableValues.isNotEmpty()) {
+            value = "$value ${tableValues.joinToString(", ")}"
+        }
+
+        value = "$value }"
+        return value
     }
 
     private fun parseLibraryString(
-        parseResult: TomlParseResult,
+        parseResult: TomlTable,
         key: String,
     ): String {
         return parseResult.getString(key)!!.let { value ->
@@ -231,7 +228,7 @@ abstract class VersionCatalogFormatter : DefaultTask() {
     }
 
     private fun parseLibraryTable(
-        parseResult: TomlParseResult,
+        parseResult: TomlTable,
         key: String,
     ): String {
         return parseResult.getTable(key)!!.let { values ->
@@ -256,7 +253,12 @@ abstract class VersionCatalogFormatter : DefaultTask() {
                 if (version is String) {
                     lib = "$lib, version = \"$version\""
                 } else if (version is TomlTable) {
-                    lib = "$lib, version.ref = \"${version.get("ref")}\""
+                    lib =
+                        if (version.get("ref") != null) {
+                            "$lib, version.ref = \"${version.get("ref")}\""
+                        } else {
+                            "$lib, ${parseVersionTable(version, "version")}"
+                        }
                 }
             }
 

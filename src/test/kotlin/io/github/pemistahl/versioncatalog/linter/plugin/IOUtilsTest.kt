@@ -52,7 +52,9 @@ class IOUtilsTest {
                         15..15 to "antlr = { module = \"antlr:antlr\",    version = \"2.7.7\" }",
                         17..17 to
                             "apacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
-                        18..18 to "apacheHttpCore = { group = \"org.apache.httpcomponents\", name = \"httpcore\", version = \"4.4.16\" }",
+                        18..18 to
+                            "apacheHttpCore = { group = \"org.apache.httpcomponents\", name = \"httpcore\", " +
+                            "version = { prefer = \"4.4.16\", strictly = \"[4.4, 4.5[\" } }",
                         19..19 to "apacheHttpMime = {name = \"httpmime\", version = \"4.5.14\", group = \"org.apache.httpcomponents\" } " +
                             "# This comment is for a key-value pair.",
                         21..21 to
@@ -109,7 +111,9 @@ class IOUtilsTest {
                         16..16 to "antlr = { group = \"antlr\", name = \"antlr\", version = \"2.7.7\" }",
                         17..17 to
                             "apacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
-                        18..18 to "apacheHttpCore = { group = \"org.apache.httpcomponents\", name = \"httpcore\", version = \"4.4.16\" }",
+                        18..18 to
+                            "apacheHttpCore = { group = \"org.apache.httpcomponents\", name = \"httpcore\", " +
+                            "version = { strictly = \"[4.4, 4.5[\", prefer = \"4.4.16\" } }",
                         19..19 to "apacheHttpMime = { group = \"org.apache.httpcomponents\", name = \"httpmime\", version = \"4.5.14\" }",
                         20..20 to "groovy = { group = \"org.codehaus.groovy\", name = \"groovy\", version.ref = \"groovy\" }",
                         21..21 to

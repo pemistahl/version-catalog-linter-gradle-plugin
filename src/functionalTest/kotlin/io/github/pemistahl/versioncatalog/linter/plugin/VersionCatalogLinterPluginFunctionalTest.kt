@@ -112,7 +112,7 @@ class VersionCatalogLinterPluginFunctionalTest {
             "Line 13: Entry with key 'byteBuddy' in section '[versions]' must not have leading whitespace.",
             "Line 14: Entry with key 'cache2k' in section '[versions]' must not have " +
                 "two or more adjacent whitespace characters.",
-            "Line 15: Attributes of version with key 'slf4j' are not sorted correctly. " +
+            "Line 15: Version attributes of entry with key 'slf4j' are not sorted correctly. " +
                 "Required order: strictly, require, prefer, reject",
             "Line 18: Bundle with key 'foo' must be indented with each library on a " +
                 "separate line preceded by four whitespace characters.",

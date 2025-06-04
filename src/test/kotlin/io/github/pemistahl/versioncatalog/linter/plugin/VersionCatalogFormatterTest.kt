@@ -132,7 +132,9 @@ class VersionCatalogFormatterTest {
                 24..24 to "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" }",
                 25..25 to "antlr = { module = \"antlr:antlr\",    version = \"2.7.7\" } #   This is a comment.",
                 26..26 to "apacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
-                27..27 to "apacheHttpCore = { group = \"org.apache.httpcomponents\", name = \"httpcore\", version = \"4.4.16\" }",
+                27..27 to
+                    "apacheHttpCore = { group = \"org.apache.httpcomponents\", name = \"httpcore\", " +
+                    "version = { prefer = \"4.4.16\", strictly = \"[4.4, 4.5[\" } }",
                 28..28 to "apacheHttpMime = {name = \"httpmime\", version = \"4.5.14\", group = \"org.apache.httpcomponents\" }",
                 30..30 to "groovyTemplates = {name = \"groovy-templates\", group = \"org.codehaus.groovy\", version.ref = \"groovy\" }",
             ),
@@ -141,7 +143,8 @@ class VersionCatalogFormatterTest {
                 "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" }",
                 "antlr = { group = \"antlr\", name = \"antlr\", version = \"2.7.7\" }",
                 "apacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
-                "apacheHttpCore = { group = \"org.apache.httpcomponents\", name = \"httpcore\", version = \"4.4.16\" }",
+                "apacheHttpCore = { group = \"org.apache.httpcomponents\", name = \"httpcore\", " +
+                    "version = { strictly = \"[4.4, 4.5[\", prefer = \"4.4.16\" } }",
                 "apacheHttpMime = { group = \"org.apache.httpcomponents\", name = \"httpmime\", version = \"4.5.14\" }",
                 "groovy = { group = \"org.codehaus.groovy\", name = \"groovy\", version.ref = \"groovy\" }",
                 "groovyTemplates = { group = \"org.codehaus.groovy\", name = \"groovy-templates\", version.ref = \"groovy\" }",
