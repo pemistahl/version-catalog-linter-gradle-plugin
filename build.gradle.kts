@@ -24,7 +24,7 @@ plugins {
 }
 
 group = "io.github.pemistahl"
-version = "1.0.5"
+version = "1.1.0"
 
 kotlin {
     compilerOptions {
@@ -33,8 +33,9 @@ kotlin {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
 }
 
 testing {
