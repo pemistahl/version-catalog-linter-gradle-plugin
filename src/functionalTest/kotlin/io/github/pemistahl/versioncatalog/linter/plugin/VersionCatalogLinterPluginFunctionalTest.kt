@@ -95,40 +95,50 @@ class VersionCatalogLinterPluginFunctionalTest {
 
         """.trimIndent()
 
+    private val formattedVersionCatalogContentWithBom =
+        """
+        [libraries]
+        activation = { group = "com.sun.activation", name = "javax.activation", version = "1.2.0" }
+        azure = { group = "com.azure", name = "azure-sdk", version = "1.2.35" }
+        quarkus = { module = "io.quarkus.platform:quarkus-bom", version = "3.21.2" }
+        quarkusArc = { module = "io.quarkus:quarkus-arc" }
+
+        """.trimIndent()
+
     private val errorMessages =
         listOf(
-            "Line 2: Attributes of library with key 'activation' are not sorted correctly. " +
+            "Line 2: Attributes of library with alias 'activation' are not sorted correctly. " +
                 "Required order: [module | group], name (, version(.ref))",
-            "Line 2: Entry with key 'activation' in section '[libraries]' must not have " +
+            "Line 2: Entry with alias 'activation' in section '[libraries]' must not have " +
                 "two or more adjacent whitespace characters.",
-            "Line 4: Use table notation instead of string notation for library with key 'antlr'. " +
+            "Line 4: Use table notation instead of string notation for library with alias 'antlr'. " +
                 "Required order: [module | group], name (, version(.ref))",
             "Line 7: Entries are not sorted alphabetically in section '[plugins]'. " +
-                "Found key 'shadowJar' where 'ktlint' was expected.",
-            "Line 9: Attributes of plugin with key 'ktlint' are not sorted correctly. " +
+                "Found alias 'shadowJar' where 'ktlint' was expected.",
+            "Line 9: Attributes of plugin with alias 'ktlint' are not sorted correctly. " +
                 "Required order: id, version(.ref)",
             "Line 9: Entries are not sorted alphabetically in section '[plugins]'. " +
-                "Found key 'ktlint' where 'shadowJar' was expected.",
-            "Line 13: Entry with key 'byteBuddy' in section '[versions]' must not have leading whitespace.",
-            "Line 14: Entry with key 'cache2k' in section '[versions]' must not have " +
+                "Found alias 'ktlint' where 'shadowJar' was expected.",
+            "Line 13: Entry with alias 'byteBuddy' in section '[versions]' must not have leading whitespace.",
+            "Line 14: Entry with alias 'cache2k' in section '[versions]' must not have " +
                 "two or more adjacent whitespace characters.",
-            "Line 15: Version attributes of entry with key 'slf4j' are not sorted correctly. " +
+            "Line 15: Version attributes of entry with alias 'slf4j' are not sorted correctly. " +
                 "Required order: strictly, require, prefer, reject",
-            "Line 18: Bundle with key 'foo' must be indented with each library on a " +
+            "Line 18: Bundle with alias 'foo' must be indented with each library on a " +
                 "separate line preceded by four whitespace characters.",
             "Line 18: Entries are not sorted alphabetically in section '[bundles]'. " +
-                "Found key 'foo' where 'bar' was expected.",
-            "Line 18: Libraries of bundle with key 'foo' are not sorted alphabetically. " +
+                "Found alias 'foo' where 'bar' was expected.",
+            "Line 18: Libraries of bundle with alias 'foo' are not sorted alphabetically. " +
                 "Found library 'activation' where 'antisamy' was expected.",
-            "Line 18: Libraries of bundle with key 'foo' are not sorted alphabetically. " +
+            "Line 18: Libraries of bundle with alias 'foo' are not sorted alphabetically. " +
                 "Found library 'antisamy' where 'antlr' was expected.",
-            "Line 18: Libraries of bundle with key 'foo' are not sorted alphabetically. " +
+            "Line 18: Libraries of bundle with alias 'foo' are not sorted alphabetically. " +
                 "Found library 'antlr' where 'activation' was expected.",
             "Lines 19-22: Entries are not sorted alphabetically in section '[bundles]'. " +
-                "Found key 'bar' where 'foo' was expected.",
-            "Line 20: Libraries of bundle with key 'bar' are not sorted alphabetically. " +
+                "Found alias 'bar' where 'foo' was expected.",
+            "Line 20: Libraries of bundle with alias 'bar' are not sorted alphabetically. " +
                 "Found library 'antisamy' where 'activation' was expected.",
-            "Line 21: Libraries of bundle with key 'bar' are not sorted alphabetically. " +
+            "Line 21: Libraries of bundle with alias 'bar' are not sorted alphabetically. " +
                 "Found library 'activation' where 'antisamy' was expected.",
         )
 
@@ -315,6 +325,111 @@ class VersionCatalogLinterPluginFunctionalTest {
         assertTrue(
             checkTaskResult.output.contains(
                 "An input file was expected to be present but it doesn't exist.",
+            ),
+        )
+    }
+
+    @Test
+    fun testPluginWithDefaultSettingsAndFormattedVersionCatalogWithBom() {
+        buildFilePath.writeText(
+            """
+            plugins {
+                id("io.github.pemistahl.version-catalog-linter")
+            }
+            """.trimIndent(),
+        )
+
+        versionCatalogFilePath.writeText(formattedVersionCatalogContentWithBom)
+
+        val checkTaskResult =
+            GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("checkVersionCatalog")
+                .buildAndFail()
+
+        assertEquals(
+            TaskOutcome.FAILED,
+            checkTaskResult.task(":checkVersionCatalog")?.outcome,
+        )
+
+        assertTrue(
+            checkTaskResult.output.contains(
+                "Line 5: Library with alias 'quarkusArc' has no version defined " +
+                    "and no BOM declaration exists for it.",
+            ),
+        )
+    }
+
+    @Test
+    fun testPluginWithValidCustomSettingsAndFormattedVersionCatalogWithBom() {
+        buildFilePath.writeText(
+            """
+            plugins {
+                id("io.github.pemistahl.version-catalog-linter")
+            }
+
+            versionCatalogLinter {
+                bomsAndDependencies.put("quarkus", listOf("quarkusArc"))
+            }
+            """.trimIndent(),
+        )
+
+        versionCatalogFilePath.writeText(formattedVersionCatalogContentWithBom)
+
+        val checkTaskResult =
+            GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("checkVersionCatalog")
+                .build()
+
+        assertEquals(
+            TaskOutcome.SUCCESS,
+            checkTaskResult.task(":checkVersionCatalog")?.outcome,
+        )
+    }
+
+    @Test
+    fun testPluginWithInvalidCustomSettingsAndFormattedVersionCatalogWithBom() {
+        buildFilePath.writeText(
+            """
+            plugins {
+                id("io.github.pemistahl.version-catalog-linter")
+            }
+
+            versionCatalogLinter {
+                bomsAndDependencies.put("azure", listOf())
+                bomsAndDependencies.put("spring", listOf("spring-boot"))
+                bomsAndDependencies.put("quarkus", listOf("quarkusArc"))
+            }
+            """.trimIndent(),
+        )
+
+        versionCatalogFilePath.writeText(formattedVersionCatalogContentWithBom)
+
+        val checkTaskResult =
+            GradleRunner.create()
+                .withProjectDir(projectDir)
+                .withPluginClasspath()
+                .withArguments("checkVersionCatalog")
+                .buildAndFail()
+
+        assertEquals(
+            TaskOutcome.FAILED,
+            checkTaskResult.task(":checkVersionCatalog")?.outcome,
+        )
+
+        assertTrue(
+            checkTaskResult.output.containsAll(
+                listOf(
+                    "The following aliases in the version catalog " +
+                        "linter settings cannot be matched with " +
+                        "a library in the version catalog: 'spring', 'spring-boot'",
+                    "The libraries identified by the following aliases " +
+                        "do not seem to be proper BOMs as their names " +
+                        "do not end with the suffix '-bom' or '-dependencies': 'azure'",
+                ),
             ),
         )
     }

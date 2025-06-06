@@ -45,12 +45,12 @@ abstract class VersionCatalogFormatter : DefaultTask() {
             .map { pair ->
                 val version = pair.second.trim()
                 val parseResult = Toml.parse(version)
-                val key = parseResult.keySet().iterator().next()
+                val alias = parseResult.keySet().iterator().next()
                 val formattedVersion =
-                    if (parseResult.isString(key)) {
-                        "$key = \"${parseResult.getString(key)}\""
-                    } else if (parseResult.isTable(key)) {
-                        parseVersionTable(parseResult, key)
+                    if (parseResult.isString(alias)) {
+                        "$alias = \"${parseResult.getString(alias)}\""
+                    } else if (parseResult.isTable(alias)) {
+                        parseVersionTable(parseResult, alias)
                     } else {
                         version
                     }
@@ -65,12 +65,12 @@ abstract class VersionCatalogFormatter : DefaultTask() {
             .map { pair ->
                 val library = pair.second.trim()
                 val parseResult = Toml.parse(library)
-                val key = parseResult.keySet().iterator().next()
+                val alias = parseResult.keySet().iterator().next()
                 val formattedLibrary =
-                    if (parseResult.isString(key)) {
-                        parseLibraryString(parseResult, key)
-                    } else if (parseResult.isTable(key)) {
-                        parseLibraryTable(parseResult, key)
+                    if (parseResult.isString(alias)) {
+                        parseLibraryString(parseResult, alias)
+                    } else if (parseResult.isTable(alias)) {
+                        parseLibraryTable(parseResult, alias)
                     } else {
                         library
                     }
@@ -85,15 +85,15 @@ abstract class VersionCatalogFormatter : DefaultTask() {
             .map { pair ->
                 val bundle = pair.second.trim()
                 val parseResult = Toml.parse(bundle)
-                val key = parseResult.keySet().iterator().next()
+                val alias = parseResult.keySet().iterator().next()
                 val libraries =
-                    parseResult.getArray(key)!!.toList()
+                    parseResult.getArray(alias)!!.toList()
                         .asSequence()
                         .map { library -> "\"$library\"" }
                         .sorted()
                         .toList()
                 val separator = "\n    "
-                "$key = [$separator${libraries.joinToString(",$separator")}\n]"
+                "$alias = [$separator${libraries.joinToString(",$separator")}\n]"
             }
             .sorted()
             .toList()
@@ -104,11 +104,11 @@ abstract class VersionCatalogFormatter : DefaultTask() {
             .map { pair ->
                 val plugin = pair.second.trim()
                 val parseResult = Toml.parse(plugin)
-                val key = parseResult.keySet().iterator().next()
-                val values = parseResult.getTable(key)?.toMap()
+                val alias = parseResult.keySet().iterator().next()
+                val values = parseResult.getTable(alias)?.toMap()
                 val id = values?.get("id")
                 val version = values?.get("version")
-                var formattedPlugin = "$key = { id = \"$id\""
+                var formattedPlugin = "$alias = { id = \"$id\""
 
                 if (version is String) {
                     formattedPlugin = "$formattedPlugin, version = \"$version\" }"
@@ -178,12 +178,12 @@ abstract class VersionCatalogFormatter : DefaultTask() {
 
     private fun parseVersionTable(
         parseResult: TomlTable,
-        key: String,
+        alias: String,
     ): String {
         val stringKeys = listOf("strictly", "require", "prefer")
         val arrayKey = "reject"
-        val versionTable = parseResult.getTable(key) ?: parseResult
-        var value = "$key = {"
+        val versionTable = parseResult.getTable(alias) ?: parseResult
+        var value = "$alias = {"
         val tableValues = mutableListOf<String>()
 
         for (stringKey in stringKeys) {
@@ -214,25 +214,32 @@ abstract class VersionCatalogFormatter : DefaultTask() {
 
     private fun parseLibraryString(
         parseResult: TomlTable,
-        key: String,
+        alias: String,
     ): String {
-        return parseResult.getString(key)!!.let { value ->
+        return parseResult.getString(alias)!!.let { value ->
             val valueParts = value.split(":")
-            if (valueParts.size == 3) {
-                val (group, name, version) = valueParts
-                "$key = { group = \"$group\", name = \"$name\", version = \"$version\" }"
-            } else {
-                "$key = $value"
+            when (valueParts.size) {
+                3 -> {
+                    val (group, name, version) = valueParts
+                    "$alias = { group = \"$group\", name = \"$name\", version = \"$version\" }"
+                }
+                2 -> {
+                    val (group, name) = valueParts
+                    "$alias = { group = \"$group\", name = \"$name\" }"
+                }
+                else -> {
+                    "$alias = $value"
+                }
             }
         }
     }
 
     private fun parseLibraryTable(
         parseResult: TomlTable,
-        key: String,
+        alias: String,
     ): String {
-        return parseResult.getTable(key)!!.let { values ->
-            var lib = "$key = {"
+        return parseResult.getTable(alias)!!.let { values ->
+            var lib = "$alias = {"
             if (values.isString("module")) {
                 values.getString("module")!!.let { module ->
                     val moduleParts = module.split(":")

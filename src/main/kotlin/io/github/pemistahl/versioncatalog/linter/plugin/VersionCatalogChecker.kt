@@ -18,7 +18,9 @@ package io.github.pemistahl.versioncatalog.linter.plugin
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
 import org.tomlj.Toml
@@ -29,9 +31,15 @@ abstract class VersionCatalogChecker : DefaultTask() {
     @get:InputFile
     abstract val versionCatalogFile: Property<File>
 
+    @get:Input
+    abstract val bomsAndDependencies: MapProperty<String, List<String>>
+
     @TaskAction
     fun checkVersionCatalog() {
         val catalog = readVersionCatalog(versionCatalogFile.get())
+
+        checkBomsAndDependencies(catalog.libraries)
+
         val errorMessages = mutableListOf<ErrorMessage>()
 
         errorMessages.addAll(checkVersions(catalog.versions))
@@ -53,11 +61,11 @@ abstract class VersionCatalogChecker : DefaultTask() {
 
         for ((lineNumbers, version) in versions) {
             val parseResult = Toml.parse(version)
-            val key = parseResult.keySet().iterator().next()
+            val alias = parseResult.keySet().iterator().next()
 
-            if (parseResult.isTable(key)) {
-                val versionTable = parseResult.getTableOrEmpty(key)
-                errorMessages.addAll(checkRichVersions(versionTable, key, lineNumbers))
+            if (parseResult.isTable(alias)) {
+                val versionTable = parseResult.getTableOrEmpty(alias)
+                errorMessages.addAll(checkRichVersions(versionTable, alias, lineNumbers))
             }
         }
 
@@ -73,56 +81,56 @@ abstract class VersionCatalogChecker : DefaultTask() {
 
         for ((lineNumbers, library) in libraries) {
             val parseResult = Toml.parse(library)
-            val key = parseResult.keySet().iterator().next()
+            val alias = parseResult.keySet().iterator().next()
 
             val requiredOrder = "Required order: [module | group], name (, version(.ref))"
-            val tableNotationMessage = "Use table notation instead of string notation for library with key '$key'. $requiredOrder"
-            val notSortedMessage = "Attributes of library with key '$key' are not sorted correctly. $requiredOrder"
+            val tableNotationMessage = "Use table notation instead of string notation for library with alias '$alias'. $requiredOrder"
+            val notSortedMessage = "Attributes of library with alias '$alias' are not sorted correctly. $requiredOrder"
             val noBomMessage =
-                "Attributes of library with key '$key' has no version defined " +
-                    "or no bom declaration exists for '%s'."
+                "Library with alias '$alias' has no version defined and no BOM declaration exists for it."
 
-            if (parseResult.isString(key)) {
+            if (parseResult.isString(alias)) {
                 errorMessages.add(ErrorMessage(lineNumbers, tableNotationMessage))
-            } else if (parseResult.isTable(key)) {
-                val libraryTable = parseResult.getTableOrEmpty(key)
+            } else if (parseResult.isTable(alias)) {
+                val libraryTable = parseResult.getTableOrEmpty(alias)
 
                 if (libraryTable.isTable("version")) {
                     val versionTable = libraryTable.getTableOrEmpty("version")
-                    errorMessages.addAll(checkRichVersions(versionTable, key, lineNumbers))
+                    errorMessages.addAll(checkRichVersions(versionTable, alias, lineNumbers))
                 }
 
                 val attributes = libraryTable.keySet().iterator()
                 val firstAttribute = attributes.next()
                 val secondAttributeExists = attributes.hasNext()
 
-                val isModuleDefined = firstAttribute == "module"
-                val isGroupDefined = firstAttribute == "group"
+                val isFirstAttributeModule = firstAttribute == "module"
+                val isFirstAttributeGroup = firstAttribute == "group"
 
                 if (secondAttributeExists) {
                     val secondAttribute = attributes.next()
+                    val isSecondAttributeName = secondAttribute == "name"
+                    val isSecondAttributeVersion = secondAttribute.startsWith("version")
 
-                    val isModuleAndVersionDefined = isModuleDefined && secondAttribute.startsWith("version")
-                    val isGroupAndNameDefined = isGroupDefined && secondAttribute == "name"
+                    val isModuleAndVersionSorted = isFirstAttributeModule && isSecondAttributeVersion
+                    val isGroupAndNameSorted = isFirstAttributeGroup && isSecondAttributeName
 
-                    if (!isModuleAndVersionDefined && !isGroupAndNameDefined) {
+                    if (!isModuleAndVersionSorted && !isGroupAndNameSorted) {
                         errorMessages.add(ErrorMessage(lineNumbers, notSortedMessage))
-                    } else if (isGroupAndNameDefined && !attributes.hasNext()) {
-                        val bomDeclarations = getBomDeclarations(libraries)
-                        val firstAttributeValue = parseResult.getTable(key)?.getString(firstAttribute)
-                        if (!isGroupPartOfBomDeclaration(bomDeclarations, firstAttributeValue)) {
-                            errorMessages.add(ErrorMessage(lineNumbers, noBomMessage.format(firstAttributeValue)))
+                    }
+
+                    val hasGroup = libraryTable.isString("group")
+                    val hasName = libraryTable.isString("name")
+
+                    if (hasGroup && hasName && !attributes.hasNext()) {
+                        if (!isLibraryDependencyOfBom(alias)) {
+                            errorMessages.add(ErrorMessage(lineNumbers, noBomMessage))
                         }
                     }
-                } else if (!isModuleDefined && !isGroupDefined) {
+                } else if (!isFirstAttributeModule && !isFirstAttributeGroup) {
                     errorMessages.add(ErrorMessage(lineNumbers, notSortedMessage))
                 } else {
-                    val bomDeclarations = getBomDeclarations(libraries)
-                    val firstAttributeValue =
-                        parseResult.getTable(key)?.getString(firstAttribute)?.split(":")
-                            ?.first()
-                    if (!isGroupPartOfBomDeclaration(bomDeclarations, firstAttributeValue)) {
-                        errorMessages.add(ErrorMessage(lineNumbers, noBomMessage.format(firstAttributeValue)))
+                    if (!isLibraryDependencyOfBom(alias)) {
+                        errorMessages.add(ErrorMessage(lineNumbers, noBomMessage))
                     }
                 }
             }
@@ -139,8 +147,8 @@ abstract class VersionCatalogChecker : DefaultTask() {
 
         for ((lineNumbers, bundle) in bundles) {
             val parseResult = Toml.parse(bundle)
-            val key = parseResult.keySet().iterator().next()
-            val libraries = parseResult.getArray(key)!!.toList().map { it as String }
+            val alias = parseResult.keySet().iterator().next()
+            val libraries = parseResult.getArray(alias)!!.toList().map { it as String }
             val sortedLibraries = libraries.sorted()
 
             for ((i, library) in libraries.withIndex()) {
@@ -154,7 +162,7 @@ abstract class VersionCatalogChecker : DefaultTask() {
                             lineNumbers.first + i + 1
                         }
                     val message =
-                        "Libraries of bundle with key '$key' are not sorted alphabetically. " +
+                        "Libraries of bundle with alias '$alias' are not sorted alphabetically. " +
                             "Found library '$library' where '$sortedLibrary' was expected."
                     errorMessages.add(ErrorMessage(numbers..numbers, message))
                 }
@@ -172,13 +180,13 @@ abstract class VersionCatalogChecker : DefaultTask() {
 
         for ((lineNumbers, plugin) in plugins) {
             val parseResult = Toml.parse(plugin)
-            val key = parseResult.keySet().iterator().next()
-            val attributes = parseResult.getTable(key)!!.keySet().iterator()
+            val alias = parseResult.keySet().iterator().next()
+            val attributes = parseResult.getTable(alias)!!.keySet().iterator()
             val firstAttribute = attributes.next()
 
             if (firstAttribute != "id") {
                 val message =
-                    "Attributes of plugin with key '$key' are not sorted correctly. " +
+                    "Attributes of plugin with alias '$alias' are not sorted correctly. " +
                         "Required order: id, version(.ref)"
                 errorMessages.add(ErrorMessage(lineNumbers, message))
             }
@@ -187,15 +195,93 @@ abstract class VersionCatalogChecker : DefaultTask() {
         return errorMessages
     }
 
-    internal fun getBomDeclarations(libraries: List<Pair<IntRange, String>>): List<String> {
-        return libraries.filter {
-            it.second.contains("-bom")
-        }.map {
-            Toml.parse(it.second).let { parseResult ->
-                val key = parseResult.keySet().first()
-                parseResult.getTable(key)?.getString("module") ?: parseResult.getTable(key)
-                    ?.getString("group")
-            }!!.split(":").first()
+    private fun checkBomsAndDependencies(libraries: List<Pair<IntRange, String>>) {
+        val errorMessages = mutableListOf<String>()
+        val bomAliases = bomsAndDependencies.keySet().get()
+        val dependencyAliases = bomsAndDependencies.get().values.flatten()
+        val bomAndDependencyAliases = bomAliases.plus(dependencyAliases)
+        val libraryAliases =
+            libraries.asSequence()
+                .map { Toml.parse(it.second.trim()).keySet().iterator().next() }
+                .filter { alias -> bomAndDependencyAliases.contains(alias) }
+                .toSet()
+
+        val missingAliases = bomAndDependencyAliases.subtract(libraryAliases)
+
+        if (missingAliases.isNotEmpty()) {
+            val formattedAliases = missingAliases.map { "'$it'" }.sorted().joinToString(separator = ", ")
+            val alias = if (missingAliases.size == 1) "alias" else "aliases"
+            errorMessages.add(
+                "The following $alias in the version catalog " +
+                    "linter settings cannot be matched with " +
+                    "a library in the version catalog: $formattedAliases",
+            )
+        }
+
+        val bomAliasesToNames =
+            libraries.asSequence()
+                .map { Toml.parse(it.second.trim()) }
+                .filter { parseResult ->
+                    val alias = parseResult.keySet().iterator().next()
+                    bomAliases.contains(alias)
+                }
+                .map { parseResult ->
+                    val alias = parseResult.keySet().iterator().next()
+                    if (parseResult.isString(alias)) {
+                        val bomName =
+                            parseResult.getString(alias)!!.let { value ->
+                                val valueParts = value.split(":")
+                                if (valueParts.size in 2..3) {
+                                    valueParts[1]
+                                } else {
+                                    valueParts[0]
+                                }
+                            }
+                        alias to bomName
+                    } else if (parseResult.isTable(alias)) {
+                        val bomName =
+                            parseResult.getTable(alias)!!.let { values ->
+                                if (values.isString("module")) {
+                                    values.getString("module")!!.let { module ->
+                                        val moduleParts = module.split(":")
+                                        if (moduleParts.size == 2) {
+                                            moduleParts[1]
+                                        } else {
+                                            moduleParts[0]
+                                        }
+                                    }
+                                } else if (values.contains("group") && values.contains("name")) {
+                                    values["name"] as String
+                                } else {
+                                    null
+                                }
+                            }
+                        alias to bomName
+                    } else {
+                        alias to null
+                    }
+                }
+                .toMap()
+
+        val invalidBomAliasesToNames =
+            bomAliasesToNames
+                .filter { (_, name) -> name != null && !name.endsWith("-bom") && !name.endsWith("-dependencies") }
+
+        if (invalidBomAliasesToNames.isNotEmpty()) {
+            val formattedAliases =
+                invalidBomAliasesToNames
+                    .map { (alias, _) -> "'$alias'" }
+                    .sorted()
+                    .joinToString(separator = ", ")
+            errorMessages.add(
+                "The libraries identified by the following aliases " +
+                    "do not seem to be proper BOMs as their names do not " +
+                    "end with the suffix '-bom' or '-dependencies': $formattedAliases",
+            )
+        }
+
+        if (errorMessages.isNotEmpty()) {
+            throw GradleException(errorMessages.joinToString("\n"))
         }
     }
 
@@ -208,30 +294,30 @@ abstract class VersionCatalogChecker : DefaultTask() {
 
         for ((lineNumbers, line) in lines) {
             val parseResult = Toml.parse(line)
-            val key = parseResult.keySet().iterator().next()
+            val alias = parseResult.keySet().iterator().next()
 
             if (line.trimStart() != line) {
                 val message =
-                    "Entry with key '$key' in section '${section.label}' must not have leading whitespace."
+                    "Entry with alias '$alias' in section '${section.label}' must not have leading whitespace."
                 errorMessages.add(ErrorMessage(lineNumbers, message))
             }
 
             if (section == VersionCatalogSection.BUNDLES) {
-                val arraySize = parseResult.getArray(key)!!.size()
+                val arraySize = parseResult.getArray(alias)!!.size()
                 val arrayElements = line.split(Regex("(?:\r\n|\r|\n)(?: {4}|])"))
                 val isArraySizeCorrect = arrayElements.size == arraySize + 2
                 val arrayElementStartsWithWhitespace = arrayElements.any { it.startsWith(" ") }
 
                 if (!isArraySizeCorrect || arrayElementStartsWithWhitespace) {
                     val message =
-                        "Bundle with key '$key' " +
+                        "Bundle with alias '$alias' " +
                             "must be indented with each library on a separate line " +
                             "preceded by four whitespace characters."
                     errorMessages.add(ErrorMessage(lineNumbers, message))
                 }
             } else if (line.split(splitRegex).size > 1) {
                 val message =
-                    "Entry with key '$key' " +
+                    "Entry with alias '$alias' " +
                         "in section '${section.label}' " +
                         "must not have two or more adjacent whitespace characters."
                 errorMessages.add(ErrorMessage(lineNumbers, message))
@@ -239,7 +325,7 @@ abstract class VersionCatalogChecker : DefaultTask() {
 
             if (line.trimEnd() != line) {
                 val message =
-                    "Entry with key '$key' " +
+                    "Entry with alias '$alias' " +
                         "in section '${section.label}' " +
                         "must not have trailing whitespace."
                 errorMessages.add(ErrorMessage(lineNumbers, message))
@@ -260,11 +346,11 @@ abstract class VersionCatalogChecker : DefaultTask() {
             val sortedLine = sortedLines[i]
 
             if (line.trim() != sortedLine) {
-                val lineKey = Toml.parse(line).keySet().iterator().next()
-                val sortedLineKey = Toml.parse(sortedLine).keySet().iterator().next()
+                val lineAlias = Toml.parse(line).keySet().iterator().next()
+                val sortedLineAlias = Toml.parse(sortedLine).keySet().iterator().next()
                 val message =
                     "Entries are not sorted alphabetically in section '${section.label}'. " +
-                        "Found key '$lineKey' where '$sortedLineKey' was expected."
+                        "Found alias '$lineAlias' where '$sortedLineAlias' was expected."
                 errorMessages.add(ErrorMessage(lineNumbers, message))
             }
         }
@@ -273,7 +359,7 @@ abstract class VersionCatalogChecker : DefaultTask() {
 
     private fun checkRichVersions(
         versionTable: TomlTable,
-        key: String,
+        alias: String,
         lineNumbers: IntRange,
     ): List<ErrorMessage> {
         val errorMessages = mutableListOf<ErrorMessage>()
@@ -288,21 +374,14 @@ abstract class VersionCatalogChecker : DefaultTask() {
 
         if (attributeIndices != attributeIndices.sorted()) {
             val message =
-                "Version attributes of entry with key '$key' are not sorted correctly. " +
+                "Version attributes of entry with alias '$alias' are not sorted correctly. " +
                     "Required order: strictly, require, prefer, reject"
             errorMessages.add(ErrorMessage(lineNumbers, message))
         }
         return errorMessages
     }
 
-    private fun isGroupPartOfBomDeclaration(
-        bomDeclarations: List<String>,
-        group: String?,
-    ): Boolean {
-        val customGroupToBomMapping =
-            mapOf(
-                "io.rest-assured" to "io.quarkus.platform",
-            )
-        return group != null && bomDeclarations.any { it.contains(group) || it == customGroupToBomMapping[group] }
+    private fun isLibraryDependencyOfBom(libraryAlias: String): Boolean {
+        return bomsAndDependencies.get().values.any { it.contains(libraryAlias) }
     }
 }

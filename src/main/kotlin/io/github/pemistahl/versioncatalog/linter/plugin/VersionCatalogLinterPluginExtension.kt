@@ -16,9 +16,11 @@
 
 package io.github.pemistahl.versioncatalog.linter.plugin
 
+import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
 import java.io.File
 
 interface VersionCatalogLinterPluginExtension {
     val versionCatalogFile: Property<File>
+    val bomsAndDependencies: MapProperty<String, List<String>>
 }

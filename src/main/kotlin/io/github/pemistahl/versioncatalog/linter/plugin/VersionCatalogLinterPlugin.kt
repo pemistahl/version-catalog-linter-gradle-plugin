@@ -33,6 +33,7 @@ class VersionCatalogLinterPlugin : Plugin<Project> {
             project.tasks.register("checkVersionCatalog", VersionCatalogChecker::class.java) {
                 it.group = "verification"
                 it.versionCatalogFile.set(extension.versionCatalogFile)
+                it.bomsAndDependencies.set(extension.bomsAndDependencies)
             }
 
         project.tasks.findByName("check")?.dependsOn(checkVersionCatalogTask)
