@@ -19,9 +19,11 @@ Add the plugin to your Gradle build file.
 
 ```kotlin
 plugins {
-    id("io.github.pemistahl.version-catalog-linter") version "1.0.5"
+    id("io.github.pemistahl.version-catalog-linter") version "1.1.0"
 }
 ```
+
+### Locating version catalog TOML files
 
 By default, the plugin looks for a file named `libs.versions.toml` within the directory `gradle` in the root build of your project.
 If you have named your version catalog differently or put it in another location, specify it as follows:
@@ -57,6 +59,34 @@ tasks.check {
 }
 ```
 
+### Handling of bills of materials (BOMs)
+
+Consider the following version catalog:
+
+```toml
+[libraries]
+quarkus = { module = "io.quarkus.platform:quarkus-bom", version = "3.21.2" }
+quarkusArc = { module = "io.quarkus:quarkus-arc" }
+```
+
+If the task `checkVersionCatalog` encounters a library without a version,
+it returns the following error by default:
+
+```
+Library with alias 'quarkusArc' has no version defined and no BOM declaration exists for it.
+```
+
+This plugin does not try to identify BOM declarations automatically as their naming scheme may vary.
+Instead, you can specify associations of BOMs with dependencies they contain:
+
+```kotlin
+versionCatalogLinter {
+    bomsAndDependencies.put("quarkus", listOf("quarkusArc"))
+}
+```
+
+Afterwards, no error will be thrown anymore for the unversioned dependency.
+
 ## Example
 
 Below, you find examples for a totally messed up version catalog and how the output
@@ -80,7 +110,7 @@ antisamy = { group = "org.owasp.antisamy", name = "antisamy", version = "1.5.2" 
 antlr = { module = "antlr:antlr",    version = "2.7.7" }
 # This is a single-line comment.
 apacheHttpClient = { group = "org.apache.httpcomponents", name = "httpclient", version = "4.5.14" }
-apacheHttpCore = { group = "org.apache.httpcomponents", name = "httpcore", version = "4.4.16" }
+apacheHttpCore = { group = "org.apache.httpcomponents", name = "httpcore", version = { prefer = "4.4.16", strictly = "[4.4, 4.5[" } }
 apacheHttpMime = {name = "httpmime", version = "4.5.14", group = "org.apache.httpcomponents" } # This comment is for a key-value pair.
 
 groovyTemplates = {name = "groovy-templates", group = "org.codehaus.groovy", version.ref = "groovy" }
@@ -125,48 +155,49 @@ FAILURE: Build failed with an exception.
 
 * What went wrong:
 Execution failed for task ':checkVersionCatalog'.
-> Line 4: Entries are not sorted alphabetically in section '[libraries]'. Found key 'groovy' where 'activation' was expected.
-  Line 5: Entries are not sorted alphabetically in section '[libraries]'. Found key 'activation' where 'antisamy' was expected.
-  Line 8: Entries are not sorted alphabetically in section '[libraries]'. Found key 'jgoodiesDesktop' where 'antlr' was expected.
-  Line 9: Entries are not sorted alphabetically in section '[libraries]'. Found key 'jgoodiesFramework' where 'apacheHttpClient' was expected.
-  Line 9: Entry with key 'jgoodiesFramework' in section '[libraries]' must not have leading whitespace.
-  Line 9: Entry with key 'jgoodiesFramework' in section '[libraries]' must not have two or more adjacent whitespace characters.
-  Line 10: Entries are not sorted alphabetically in section '[libraries]'. Found key 'jgoodiesDialogs' where 'apacheHttpCore' was expected.
-  Line 11: Entries are not sorted alphabetically in section '[libraries]'. Found key 'antisamy' where 'apacheHttpMime' was expected.
-  Line 12: Entries are not sorted alphabetically in section '[libraries]'. Found key 'antlr' where 'groovy' was expected.
-  Line 12: Entry with key 'antlr' in section '[libraries]' must not have two or more adjacent whitespace characters.
-  Line 12: Use table notation instead of string notation for library with key 'antlr'. Required order: [module | group], name (, version(.ref))
-  Line 14: Entries are not sorted alphabetically in section '[libraries]'. Found key 'apacheHttpClient' where 'groovyTemplates' was expected.
-  Line 15: Entries are not sorted alphabetically in section '[libraries]'. Found key 'apacheHttpCore' where 'jgoodiesDesktop' was expected.
-  Line 16: Attributes of library with key 'apacheHttpMime' are not sorted correctly. Required order: [module | group], name (, version(.ref))
-  Line 16: Entries are not sorted alphabetically in section '[libraries]'. Found key 'apacheHttpMime' where 'jgoodiesDialogs' was expected.
-  Line 18: Attributes of library with key 'groovyTemplates' are not sorted correctly. Required order: [module | group], name (, version(.ref))
-  Line 18: Entries are not sorted alphabetically in section '[libraries]'. Found key 'groovyTemplates' where 'jgoodiesFramework' was expected.
-  Line 21: Bundle with key 'groovy' must be indented with each library on a separate line preceded by four whitespace characters.
-  Line 21: Libraries of bundle with key 'groovy' are not sorted alphabetically. Found library 'groovy' where 'groovyTemplates' was expected.
-  Line 21: Libraries of bundle with key 'groovy' are not sorted alphabetically. Found library 'groovyTemplates' where 'groovy' was expected.
-  Lines 22-26: Bundle with key 'jgoodies' must be indented with each library on a separate line preceded by four whitespace characters.
-  Lines 22-26: Entry with key 'jgoodies' in section '[bundles]' must not have leading whitespace.
-  Line 31: Entries are not sorted alphabetically in section '[versions]'. Found key 'duns' where 'axis' was expected.
-  Line 32: Attributes of version with key 'slf4j' are not sorted correctly. Required order: strictly, require, prefer, reject
-  Line 32: Entries are not sorted alphabetically in section '[versions]'. Found key 'slf4j' where 'byteBuddy' was expected.
-  Line 33: Entries are not sorted alphabetically in section '[versions]'. Found key 'exact' where 'cache2k' was expected.
-  Line 33: Entry with key 'exact' in section '[versions]' must not have leading whitespace.
-  Line 33: Entry with key 'exact' in section '[versions]' must not have two or more adjacent whitespace characters.
-  Line 34: Entries are not sorted alphabetically in section '[versions]'. Found key 'groovy' where 'dockerJava' was expected.
-  Line 35: Entries are not sorted alphabetically in section '[versions]'. Found key 'axis' where 'duns' was expected.
-  Line 35: Entry with key 'axis' in section '[versions]' must not have two or more adjacent whitespace characters.
-  Line 36: Entries are not sorted alphabetically in section '[versions]'. Found key 'ktlint' where 'exact' was expected.
-  Line 37: Entries are not sorted alphabetically in section '[versions]'. Found key 'byteBuddy' where 'groovy' was expected.
-  Line 38: Entries are not sorted alphabetically in section '[versions]'. Found key 'springCore' where 'ktlint' was expected.
-  Line 38: Entry with key 'springCore' in section '[versions]' must not have two or more adjacent whitespace characters.
-  Line 39: Entries are not sorted alphabetically in section '[versions]'. Found key 'cache2k' where 'slf4j' was expected.
-  Line 40: Entries are not sorted alphabetically in section '[versions]'. Found key 'dockerJava' where 'springCore' was expected.
-  Line 45: Entries are not sorted alphabetically in section '[plugins]'. Found key 'shadowJar' where 'ktlint' was expected.
-  Line 45: Entry with key 'shadowJar' in section '[plugins]' must not have leading whitespace.
-  Line 45: Entry with key 'shadowJar' in section '[plugins]' must not have two or more adjacent whitespace characters.
-  Line 46: Attributes of plugin with key 'ktlint' are not sorted correctly. Required order: id, version(.ref)
-  Line 46: Entries are not sorted alphabetically in section '[plugins]'. Found key 'ktlint' where 'shadowJar' was expected.
+> Line 4: Entries are not sorted alphabetically in section '[libraries]'. Found alias 'groovy' where 'activation' was expected.
+  Line 5: Entries are not sorted alphabetically in section '[libraries]'. Found alias 'activation' where 'antisamy' was expected.
+  Line 8: Entries are not sorted alphabetically in section '[libraries]'. Found alias 'jgoodiesDesktop' where 'antlr' was expected.
+  Line 9: Entries are not sorted alphabetically in section '[libraries]'. Found alias 'jgoodiesFramework' where 'apacheHttpClient' was expected.
+  Line 9: Entry with alias 'jgoodiesFramework' in section '[libraries]' must not have leading whitespace.
+  Line 9: Entry with alias 'jgoodiesFramework' in section '[libraries]' must not have two or more adjacent whitespace characters.
+  Line 10: Entries are not sorted alphabetically in section '[libraries]'. Found alias 'jgoodiesDialogs' where 'apacheHttpCore' was expected.
+  Line 11: Entries are not sorted alphabetically in section '[libraries]'. Found alias 'antisamy' where 'apacheHttpMime' was expected.
+  Line 12: Entries are not sorted alphabetically in section '[libraries]'. Found alias 'antlr' where 'groovy' was expected.
+  Line 12: Entry with alias 'antlr' in section '[libraries]' must not have two or more adjacent whitespace characters.
+  Line 12: Use table notation instead of string notation for library with alias 'antlr'. Required order: [module | group], name (, version(.ref))
+  Line 14: Entries are not sorted alphabetically in section '[libraries]'. Found alias 'apacheHttpClient' where 'groovyTemplates' was expected.
+  Line 15: Version attributes of entry with alias 'apacheHttpCore' are not sorted correctly. Required order: strictly, require, prefer, reject
+  Line 15: Entries are not sorted alphabetically in section '[libraries]'. Found alias 'apacheHttpCore' where 'jgoodiesDesktop' was expected.
+  Line 16: Attributes of library with alias 'apacheHttpMime' are not sorted correctly. Required order: [module | group], name (, version(.ref))
+  Line 16: Entries are not sorted alphabetically in section '[libraries]'. Found alias 'apacheHttpMime' where 'jgoodiesDialogs' was expected.
+  Line 18: Attributes of library with alias 'groovyTemplates' are not sorted correctly. Required order: [module | group], name (, version(.ref))
+  Line 18: Entries are not sorted alphabetically in section '[libraries]'. Found alias 'groovyTemplates' where 'jgoodiesFramework' was expected.
+  Line 21: Bundle with alias 'groovy' must be indented with each library on a separate line preceded by four whitespace characters.
+  Line 21: Libraries of bundle with alias 'groovy' are not sorted alphabetically. Found library 'groovy' where 'groovyTemplates' was expected.
+  Line 21: Libraries of bundle with alias 'groovy' are not sorted alphabetically. Found library 'groovyTemplates' where 'groovy' was expected.
+  Lines 22-26: Bundle with alias 'jgoodies' must be indented with each library on a separate line preceded by four whitespace characters.
+  Lines 22-26: Entry with alias 'jgoodies' in section '[bundles]' must not have leading whitespace.
+  Line 31: Entries are not sorted alphabetically in section '[versions]'. Found alias 'duns' where 'axis' was expected.
+  Line 32: Version attributes of entry with alias 'slf4j' are not sorted correctly. Required order: strictly, require, prefer, reject
+  Line 32: Entries are not sorted alphabetically in section '[versions]'. Found alias 'slf4j' where 'byteBuddy' was expected.
+  Line 33: Entries are not sorted alphabetically in section '[versions]'. Found alias 'exact' where 'cache2k' was expected.
+  Line 33: Entry with alias 'exact' in section '[versions]' must not have leading whitespace.
+  Line 33: Entry with alias 'exact' in section '[versions]' must not have two or more adjacent whitespace characters.
+  Line 34: Entries are not sorted alphabetically in section '[versions]'. Found alias 'groovy' where 'dockerJava' was expected.
+  Line 35: Entries are not sorted alphabetically in section '[versions]'. Found alias 'axis' where 'duns' was expected.
+  Line 35: Entry with alias 'axis' in section '[versions]' must not have two or more adjacent whitespace characters.
+  Line 36: Entries are not sorted alphabetically in section '[versions]'. Found alias 'ktlint' where 'exact' was expected.
+  Line 37: Entries are not sorted alphabetically in section '[versions]'. Found alias 'byteBuddy' where 'groovy' was expected.
+  Line 38: Entries are not sorted alphabetically in section '[versions]'. Found alias 'springCore' where 'ktlint' was expected.
+  Line 38: Entry with alias 'springCore' in section '[versions]' must not have two or more adjacent whitespace characters.
+  Line 39: Entries are not sorted alphabetically in section '[versions]'. Found alias 'cache2k' where 'slf4j' was expected.
+  Line 40: Entries are not sorted alphabetically in section '[versions]'. Found alias 'dockerJava' where 'springCore' was expected.
+  Line 45: Entries are not sorted alphabetically in section '[plugins]'. Found alias 'shadowJar' where 'ktlint' was expected.
+  Line 45: Entry with alias 'shadowJar' in section '[plugins]' must not have leading whitespace.
+  Line 45: Entry with alias 'shadowJar' in section '[plugins]' must not have two or more adjacent whitespace characters.
+  Line 46: Attributes of plugin with alias 'ktlint' are not sorted correctly. Required order: id, version(.ref)
+  Line 46: Entries are not sorted alphabetically in section '[plugins]'. Found alias 'ktlint' where 'shadowJar' was expected.
 ```
 
 ### Output of task `formatVersionCatalog`
@@ -189,7 +220,7 @@ activation = { group = "com.sun.activation", name = "javax.activation", version 
 antisamy = { group = "org.owasp.antisamy", name = "antisamy", version = "1.5.2" }
 antlr = { group = "antlr", name = "antlr", version = "2.7.7" }
 apacheHttpClient = { group = "org.apache.httpcomponents", name = "httpclient", version = "4.5.14" }
-apacheHttpCore = { group = "org.apache.httpcomponents", name = "httpcore", version = "4.4.16" }
+apacheHttpCore = { group = "org.apache.httpcomponents", name = "httpcore", version = { strictly = "[4.4, 4.5[", prefer = "4.4.16" } }
 apacheHttpMime = { group = "org.apache.httpcomponents", name = "httpmime", version = "4.5.14" }
 groovy = { group = "org.codehaus.groovy", name = "groovy", version.ref = "groovy" }
 groovyTemplates = { group = "org.codehaus.groovy", name = "groovy-templates", version.ref = "groovy" }

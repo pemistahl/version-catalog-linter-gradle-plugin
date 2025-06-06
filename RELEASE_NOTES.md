@@ -1,3 +1,16 @@
+## Version Catalog Linter 1.1.0 (released on Jun 6 2025)
+
+### Features
+
+- The new plugin setting `bomsAndDependencies` has been introduced. It allows
+  to specify associations of BOMs with dependencies they contain so that no
+  errors for unversioned dependencies are thrown.
+
+### Bug Fixes
+
+- The previous release checked and formatted rich versions only in the
+  `[versions]` block but not in the `[libraries]` block. This has been fixed.
+
 ## Version Catalog Linter 1.0.5 (released on Apr 14 2025)
 
 ### Bug Fixes
