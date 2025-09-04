@@ -20,7 +20,7 @@ plugins {
     kotlin("jvm") version "2.2.10"
     id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.gradle.plugin-publish") version "1.3.1"
+    id("com.gradle.plugin-publish") version "2.0.0"
 }
 
 group = "io.github.pemistahl"
