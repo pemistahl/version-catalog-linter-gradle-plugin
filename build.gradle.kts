@@ -14,27 +14,17 @@
  * limitations under the License.
  */
 
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    kotlin("jvm") version "2.2.10"
-    id("org.jlleitschuh.gradle.ktlint") version "12.3.0"
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.gradle.plugin-publish") version "1.3.1"
+    kotlin("jvm") version "2.2.20"
+    id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
+    id("com.gradleup.shadow") version "9.2.2"
+    id("com.gradle.plugin-publish") version "2.0.0"
 }
 
 group = "io.github.pemistahl"
 
 kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_1_8
-    }
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
+    jvmToolchain(21)
 }
 
 testing {
@@ -73,7 +63,7 @@ tasks.check {
 
 tasks.shadowJar {
     archiveClassifier = ""
-    isEnableRelocation = true
+    enableAutoRelocation = true
 }
 
 gradlePlugin {

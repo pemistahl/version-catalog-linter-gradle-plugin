@@ -201,9 +201,15 @@ abstract class VersionCatalogChecker : DefaultTask() {
         val dependencyAliases = bomsAndDependencies.get().values.flatten()
         val bomAndDependencyAliases = bomAliases.plus(dependencyAliases)
         val libraryAliases =
-            libraries.asSequence()
-                .map { Toml.parse(it.second.trim()).keySet().iterator().next() }
-                .filter { alias -> bomAndDependencyAliases.contains(alias) }
+            libraries
+                .asSequence()
+                .map {
+                    Toml
+                        .parse(it.second.trim())
+                        .keySet()
+                        .iterator()
+                        .next()
+                }.filter { alias -> bomAndDependencyAliases.contains(alias) }
                 .toSet()
 
         val missingAliases = bomAndDependencyAliases.subtract(libraryAliases)
@@ -219,13 +225,13 @@ abstract class VersionCatalogChecker : DefaultTask() {
         }
 
         val bomAliasesToNames =
-            libraries.asSequence()
+            libraries
+                .asSequence()
                 .map { Toml.parse(it.second.trim()) }
                 .filter { parseResult ->
                     val alias = parseResult.keySet().iterator().next()
                     bomAliases.contains(alias)
-                }
-                .map { parseResult ->
+                }.map { parseResult ->
                     val alias = parseResult.keySet().iterator().next()
                     if (parseResult.isString(alias)) {
                         val bomName =
@@ -260,8 +266,7 @@ abstract class VersionCatalogChecker : DefaultTask() {
                     } else {
                         alias to null
                     }
-                }
-                .toMap()
+                }.toMap()
 
         val invalidBomAliasesToNames =
             bomAliasesToNames
@@ -339,15 +344,30 @@ abstract class VersionCatalogChecker : DefaultTask() {
         section: VersionCatalogSection,
     ): List<ErrorMessage> {
         val errorMessages = mutableListOf<ErrorMessage>()
-        val sortedLines = lines.asSequence().map { it.second.trim() }.sorted().toList()
+        val sortedLines =
+            lines
+                .asSequence()
+                .map { it.second.trim() }
+                .sorted()
+                .toList()
 
         for ((i, lineElem) in lines.withIndex()) {
             val (lineNumbers, line) = lineElem
             val sortedLine = sortedLines[i]
 
             if (line.trim() != sortedLine) {
-                val lineAlias = Toml.parse(line).keySet().iterator().next()
-                val sortedLineAlias = Toml.parse(sortedLine).keySet().iterator().next()
+                val lineAlias =
+                    Toml
+                        .parse(line)
+                        .keySet()
+                        .iterator()
+                        .next()
+                val sortedLineAlias =
+                    Toml
+                        .parse(sortedLine)
+                        .keySet()
+                        .iterator()
+                        .next()
                 val message =
                     "Entries are not sorted alphabetically in section '${section.label}'. " +
                         "Found alias '$lineAlias' where '$sortedLineAlias' was expected."
@@ -381,7 +401,5 @@ abstract class VersionCatalogChecker : DefaultTask() {
         return errorMessages
     }
 
-    private fun isLibraryDependencyOfBom(libraryAlias: String): Boolean {
-        return bomsAndDependencies.get().values.any { it.contains(libraryAlias) }
-    }
+    private fun isLibraryDependencyOfBom(libraryAlias: String): Boolean = bomsAndDependencies.get().values.any { it.contains(libraryAlias) }
 }

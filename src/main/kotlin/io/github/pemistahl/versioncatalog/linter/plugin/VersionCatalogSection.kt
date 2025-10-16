@@ -16,7 +16,9 @@
 
 package io.github.pemistahl.versioncatalog.linter.plugin
 
-internal enum class VersionCatalogSection(val label: String) {
+internal enum class VersionCatalogSection(
+    val label: String,
+) {
     VERSIONS("[versions]"),
     LIBRARIES("[libraries]"),
     BUNDLES("[bundles]"),

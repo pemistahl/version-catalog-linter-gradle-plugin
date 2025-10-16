@@ -175,7 +175,8 @@ class VersionCatalogLinterPluginFunctionalTest {
         versionCatalogFilePath.writeText(formattedVersionCatalogContent)
 
         val checkTaskResult =
-            GradleRunner.create()
+            GradleRunner
+                .create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .withArguments("checkVersionCatalog")
@@ -187,7 +188,8 @@ class VersionCatalogLinterPluginFunctionalTest {
         )
 
         val formatTaskResult =
-            GradleRunner.create()
+            GradleRunner
+                .create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .withArguments("formatVersionCatalog")
@@ -216,7 +218,8 @@ class VersionCatalogLinterPluginFunctionalTest {
         customVersionCatalogFilePath.writeText(unformattedVersionCatalogContent)
 
         val checkTaskResult =
-            GradleRunner.create()
+            GradleRunner
+                .create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .withArguments("checkVersionCatalog")
@@ -230,7 +233,8 @@ class VersionCatalogLinterPluginFunctionalTest {
         assertTrue(checkTaskResult.output.containsAll(errorMessages))
 
         val formatTaskResult =
-            GradleRunner.create()
+            GradleRunner
+                .create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .withArguments("formatVersionCatalog")
@@ -266,7 +270,8 @@ class VersionCatalogLinterPluginFunctionalTest {
         versionCatalogFilePath.writeText(unformattedVersionCatalogContent)
 
         val checkTaskResult =
-            GradleRunner.create()
+            GradleRunner
+                .create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .withArguments("checkVersionCatalog")
@@ -280,7 +285,8 @@ class VersionCatalogLinterPluginFunctionalTest {
         assertTrue(checkTaskResult.output.containsAll(errorMessages))
 
         val formatTaskResult =
-            GradleRunner.create()
+            GradleRunner
+                .create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .withArguments("formatVersionCatalog")
@@ -311,7 +317,8 @@ class VersionCatalogLinterPluginFunctionalTest {
         )
 
         val checkTaskResult =
-            GradleRunner.create()
+            GradleRunner
+                .create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .withArguments("checkVersionCatalog")
@@ -342,7 +349,8 @@ class VersionCatalogLinterPluginFunctionalTest {
         versionCatalogFilePath.writeText(formattedVersionCatalogContentWithBom)
 
         val checkTaskResult =
-            GradleRunner.create()
+            GradleRunner
+                .create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .withArguments("checkVersionCatalog")
@@ -378,7 +386,8 @@ class VersionCatalogLinterPluginFunctionalTest {
         versionCatalogFilePath.writeText(formattedVersionCatalogContentWithBom)
 
         val checkTaskResult =
-            GradleRunner.create()
+            GradleRunner
+                .create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .withArguments("checkVersionCatalog")
@@ -409,7 +418,8 @@ class VersionCatalogLinterPluginFunctionalTest {
         versionCatalogFilePath.writeText(formattedVersionCatalogContentWithBom)
 
         val checkTaskResult =
-            GradleRunner.create()
+            GradleRunner
+                .create()
                 .withProjectDir(projectDir)
                 .withPluginClasspath()
                 .withArguments("checkVersionCatalog")
@@ -434,7 +444,5 @@ class VersionCatalogLinterPluginFunctionalTest {
         )
     }
 
-    private fun String.containsAll(elements: List<CharSequence>): Boolean {
-        return elements.all { this.contains(it) }
-    }
+    private fun String.containsAll(elements: List<CharSequence>): Boolean = elements.all { this.contains(it) }
 }

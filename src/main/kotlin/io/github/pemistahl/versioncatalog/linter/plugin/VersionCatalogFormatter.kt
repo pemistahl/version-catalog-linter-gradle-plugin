@@ -40,8 +40,9 @@ abstract class VersionCatalogFormatter : DefaultTask() {
         File(versionCatalogFile.get().toURI()).writeText(formattedCatalog)
     }
 
-    internal fun formatVersions(versions: List<Pair<IntRange, String>>): List<String> {
-        return versions.asSequence()
+    internal fun formatVersions(versions: List<Pair<IntRange, String>>): List<String> =
+        versions
+            .asSequence()
             .map { pair ->
                 val version = pair.second.trim()
                 val parseResult = Toml.parse(version)
@@ -55,13 +56,12 @@ abstract class VersionCatalogFormatter : DefaultTask() {
                         version
                     }
                 formattedVersion
-            }
-            .sorted()
+            }.sorted()
             .toList()
-    }
 
-    internal fun formatLibraries(libraries: List<Pair<IntRange, String>>): List<String> {
-        return libraries.asSequence()
+    internal fun formatLibraries(libraries: List<Pair<IntRange, String>>): List<String> =
+        libraries
+            .asSequence()
             .map { pair ->
                 val library = pair.second.trim()
                 val parseResult = Toml.parse(library)
@@ -75,32 +75,32 @@ abstract class VersionCatalogFormatter : DefaultTask() {
                         library
                     }
                 formattedLibrary
-            }
-            .sorted()
+            }.sorted()
             .toList()
-    }
 
-    internal fun formatBundles(bundles: List<Pair<IntRange, String>>): List<String> {
-        return bundles.asSequence()
+    internal fun formatBundles(bundles: List<Pair<IntRange, String>>): List<String> =
+        bundles
+            .asSequence()
             .map { pair ->
                 val bundle = pair.second.trim()
                 val parseResult = Toml.parse(bundle)
                 val alias = parseResult.keySet().iterator().next()
                 val libraries =
-                    parseResult.getArray(alias)!!.toList()
+                    parseResult
+                        .getArray(alias)!!
+                        .toList()
                         .asSequence()
                         .map { library -> "\"$library\"" }
                         .sorted()
                         .toList()
                 val separator = "\n    "
                 "$alias = [$separator${libraries.joinToString(",$separator")}\n]"
-            }
-            .sorted()
+            }.sorted()
             .toList()
-    }
 
-    internal fun formatPlugins(plugins: List<Pair<IntRange, String>>): List<String> {
-        return plugins.asSequence()
+    internal fun formatPlugins(plugins: List<Pair<IntRange, String>>): List<String> =
+        plugins
+            .asSequence()
             .map { pair ->
                 val plugin = pair.second.trim()
                 val parseResult = Toml.parse(plugin)
@@ -119,10 +119,8 @@ abstract class VersionCatalogFormatter : DefaultTask() {
                 }
 
                 formattedPlugin
-            }
-            .sorted()
+            }.sorted()
             .toList()
-    }
 
     internal fun joinCatalogSections(
         versions: List<String>,
@@ -196,7 +194,9 @@ abstract class VersionCatalogFormatter : DefaultTask() {
 
         if (versionTable.isArray(arrayKey)) {
             val versionsArray =
-                versionTable.getArray(arrayKey)!!.toList()
+                versionTable
+                    .getArray(arrayKey)!!
+                    .toList()
                     .asSequence()
                     .map { v -> "\"$v\"" }
                     .sorted()
@@ -215,8 +215,8 @@ abstract class VersionCatalogFormatter : DefaultTask() {
     private fun parseLibraryString(
         parseResult: TomlTable,
         alias: String,
-    ): String {
-        return parseResult.getString(alias)!!.let { value ->
+    ): String =
+        parseResult.getString(alias)!!.let { value ->
             val valueParts = value.split(":")
             when (valueParts.size) {
                 3 -> {
@@ -232,13 +232,12 @@ abstract class VersionCatalogFormatter : DefaultTask() {
                 }
             }
         }
-    }
 
     private fun parseLibraryTable(
         parseResult: TomlTable,
         alias: String,
-    ): String {
-        return parseResult.getTable(alias)!!.let { values ->
+    ): String =
+        parseResult.getTable(alias)!!.let { values ->
             var lib = "$alias = {"
             if (values.isString("module")) {
                 values.getString("module")!!.let { module ->
@@ -272,5 +271,4 @@ abstract class VersionCatalogFormatter : DefaultTask() {
             lib = "$lib }"
             lib
         }
-    }
 }

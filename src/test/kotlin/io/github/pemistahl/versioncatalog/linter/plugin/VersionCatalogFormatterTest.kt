@@ -89,8 +89,8 @@ class VersionCatalogFormatterTest {
         return project.tasks.register("formatVersionCatalog", VersionCatalogFormatter::class.java).get()
     }
 
-    private fun createVersions(): Pair<List<Pair<IntRange, String>>, List<String>> {
-        return Pair(
+    private fun createVersions(): Pair<List<Pair<IntRange, String>>, List<String>> =
+        Pair(
             listOf(
                 2..2 to "duns = \"V0\"",
                 3..3 to "slf4j = { prefer = \"1.7.25\", strictly = \"[1.7, 1.8[\" }",
@@ -116,10 +116,9 @@ class VersionCatalogFormatterTest {
                 "springCore = { require = \"4.2.9.RELEASE\", reject = [ \"4.3.16.RELEASE\", \"4.3.18.RELEASE\" ] }",
             ),
         )
-    }
 
-    private fun createLibraries(): Pair<List<Pair<IntRange, String>>, List<String>> {
-        return Pair(
+    private fun createLibraries(): Pair<List<Pair<IntRange, String>>, List<String>> =
+        Pair(
             listOf(
                 14..14 to "groovy = { group = \"org.codehaus.groovy\", name = \"groovy\", version.ref = \"groovy\" }",
                 15..15 to "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
@@ -156,10 +155,9 @@ class VersionCatalogFormatterTest {
                 "koin-test = { group = \"io.insert-koin\", name = \"koin-test\" }",
             ),
         )
-    }
 
-    private fun createBundles(): Pair<List<Pair<IntRange, String>>, List<String>> {
-        return Pair(
+    private fun createBundles(): Pair<List<Pair<IntRange, String>>, List<String>> =
+        Pair(
             listOf(
                 30..30 to "groovy    = [\"groovyTemplates\", \"groovy\"]  # This is a comment.",
                 31..32 to " jgoodies = [    \"jgoodiesDesktop\",  \n            \"jgoodiesDialogs\",    \"jgoodiesFramework\"    ]",
@@ -180,10 +178,9 @@ class VersionCatalogFormatterTest {
                 """.trimIndent(),
             ),
         )
-    }
 
-    private fun createPlugins(): Pair<List<Pair<IntRange, String>>, List<String>> {
-        return Pair(
+    private fun createPlugins(): Pair<List<Pair<IntRange, String>>, List<String>> =
+        Pair(
             listOf(
                 35..35 to "   shadowJar =          { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }  ",
                 36..36 to "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }  #  This is a comment.",
@@ -195,5 +192,4 @@ class VersionCatalogFormatterTest {
                 "versionCatalogLinter = { id = \"io.github.pemistahl.version-catalog-linter\" }",
             ),
         )
-    }
 }
