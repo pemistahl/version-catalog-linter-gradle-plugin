@@ -16,9 +16,9 @@
 
 package io.github.pemistahl.versioncatalog.linter.plugin
 
-internal data class VersionCatalog(
-    val versions: List<VersionCatalogEntry>,
-    val libraries: List<VersionCatalogEntry>,
-    val bundles: List<VersionCatalogEntry>,
-    val plugins: List<VersionCatalogEntry>,
-)
+internal data class VersionCatalogEntry(
+    var lineNumbers: IntRange,
+    var content: String,
+) {
+    constructor(lineNumber: Int, content: String) : this(lineNumber..lineNumber, content)
+}

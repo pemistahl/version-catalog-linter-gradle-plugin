@@ -40,12 +40,12 @@ abstract class VersionCatalogFormatter : DefaultTask() {
         File(versionCatalogFile.get().toURI()).writeText(formattedCatalog)
     }
 
-    internal fun formatVersions(versions: List<Pair<IntRange, String>>): List<String> =
+    internal fun formatVersions(versions: List<VersionCatalogEntry>): List<String> =
         versions
             .asSequence()
-            .map { pair ->
-                val version = pair.second.trim()
-                val parseResult = Toml.parse(version)
+            .map { version ->
+                val content = version.content.trim()
+                val parseResult = Toml.parse(content)
                 val alias = parseResult.keySet().iterator().next()
                 val formattedVersion =
                     if (parseResult.isString(alias)) {
@@ -53,18 +53,18 @@ abstract class VersionCatalogFormatter : DefaultTask() {
                     } else if (parseResult.isTable(alias)) {
                         parseVersionTable(parseResult, alias)
                     } else {
-                        version
+                        content
                     }
                 formattedVersion
             }.sorted()
             .toList()
 
-    internal fun formatLibraries(libraries: List<Pair<IntRange, String>>): List<String> =
+    internal fun formatLibraries(libraries: List<VersionCatalogEntry>): List<String> =
         libraries
             .asSequence()
-            .map { pair ->
-                val library = pair.second.trim()
-                val parseResult = Toml.parse(library)
+            .map { library ->
+                val content = library.content.trim()
+                val parseResult = Toml.parse(content)
                 val alias = parseResult.keySet().iterator().next()
                 val formattedLibrary =
                     if (parseResult.isString(alias)) {
@@ -72,18 +72,18 @@ abstract class VersionCatalogFormatter : DefaultTask() {
                     } else if (parseResult.isTable(alias)) {
                         parseLibraryTable(parseResult, alias)
                     } else {
-                        library
+                        content
                     }
                 formattedLibrary
             }.sorted()
             .toList()
 
-    internal fun formatBundles(bundles: List<Pair<IntRange, String>>): List<String> =
+    internal fun formatBundles(bundles: List<VersionCatalogEntry>): List<String> =
         bundles
             .asSequence()
-            .map { pair ->
-                val bundle = pair.second.trim()
-                val parseResult = Toml.parse(bundle)
+            .map { bundle ->
+                val content = bundle.content.trim()
+                val parseResult = Toml.parse(content)
                 val alias = parseResult.keySet().iterator().next()
                 val libraries =
                     parseResult
@@ -98,12 +98,12 @@ abstract class VersionCatalogFormatter : DefaultTask() {
             }.sorted()
             .toList()
 
-    internal fun formatPlugins(plugins: List<Pair<IntRange, String>>): List<String> =
+    internal fun formatPlugins(plugins: List<VersionCatalogEntry>): List<String> =
         plugins
             .asSequence()
-            .map { pair ->
-                val plugin = pair.second.trim()
-                val parseResult = Toml.parse(plugin)
+            .map { plugin ->
+                val content = plugin.content.trim()
+                val parseResult = Toml.parse(content)
                 val alias = parseResult.keySet().iterator().next()
                 val values = parseResult.getTable(alias)?.toMap()
                 val id = values?.get("id")

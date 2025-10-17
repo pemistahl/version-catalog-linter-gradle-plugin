@@ -20,6 +20,8 @@ internal class ErrorMessage(
     private val lineNumbers: IntRange,
     private val message: String,
 ) : Comparable<ErrorMessage> {
+    constructor(lineNumber: Int, message: String) : this(lineNumber..lineNumber, message)
+
     override fun compareTo(other: ErrorMessage): Int {
         val thisRangeStart = lineNumbers.first
         val thisRangeEnd = lineNumbers.last

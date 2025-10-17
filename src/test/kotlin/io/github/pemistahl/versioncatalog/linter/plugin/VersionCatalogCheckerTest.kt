@@ -29,9 +29,9 @@ class VersionCatalogCheckerTest {
             emptyList(),
             task.checkVersions(
                 listOf(
-                    1..1 to "byteBuddy = \"1.12.9\"",
-                    2..2 to "cache2k = \"2.0.0.Final\"",
-                    3..3 to "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }",
+                    VersionCatalogEntry(1, "byteBuddy = \"1.12.9\""),
+                    VersionCatalogEntry(2, "cache2k = \"2.0.0.Final\""),
+                    VersionCatalogEntry(3, "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }"),
                 ),
             ),
         )
@@ -40,9 +40,9 @@ class VersionCatalogCheckerTest {
             emptyList(),
             task.checkVersions(
                 listOf(
-                    1..1 to "byteBuddy = \"1.12.9\"",
-                    2..2 to "cache2k = \"2.0.0.Final\" # This is a comment.",
-                    3..3 to "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }",
+                    VersionCatalogEntry(1, "byteBuddy = \"1.12.9\""),
+                    VersionCatalogEntry(2, "cache2k = \"2.0.0.Final\" # This is a comment."),
+                    VersionCatalogEntry(3, "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }"),
                 ),
             ),
         )
@@ -52,9 +52,9 @@ class VersionCatalogCheckerTest {
             task
                 .checkVersions(
                     listOf(
-                        1..1 to " byteBuddy = \"1.12.9\"",
-                        2..2 to "cache2k = \"2.0.0.Final\"",
-                        3..3 to "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }",
+                        VersionCatalogEntry(1, " byteBuddy = \"1.12.9\""),
+                        VersionCatalogEntry(2, "cache2k = \"2.0.0.Final\""),
+                        VersionCatalogEntry(3, "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -67,9 +67,9 @@ class VersionCatalogCheckerTest {
             task
                 .checkVersions(
                     listOf(
-                        1..1 to " byteBuddy   = \"1.12.9\"",
-                        2..2 to "cache2k = \"2.0.0.Final\"",
-                        3..3 to "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }",
+                        VersionCatalogEntry(1, " byteBuddy   = \"1.12.9\""),
+                        VersionCatalogEntry(2, "cache2k = \"2.0.0.Final\""),
+                        VersionCatalogEntry(3, "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -83,9 +83,9 @@ class VersionCatalogCheckerTest {
             task
                 .checkVersions(
                     listOf(
-                        1..1 to " byteBuddy   = \"1.12.9\"  ",
-                        2..2 to "cache2k = \"2.0.0.Final\"",
-                        3..3 to "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }",
+                        VersionCatalogEntry(1, " byteBuddy   = \"1.12.9\"  "),
+                        VersionCatalogEntry(2, "cache2k = \"2.0.0.Final\""),
+                        VersionCatalogEntry(3, "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -100,9 +100,9 @@ class VersionCatalogCheckerTest {
             task
                 .checkVersions(
                     listOf(
-                        1..1 to " byteBuddy   = \"1.12.9\"  ",
-                        2..2 to "cache2k =  \"2.0.0.Final\"",
-                        3..3 to "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }",
+                        VersionCatalogEntry(1, " byteBuddy   = \"1.12.9\"  "),
+                        VersionCatalogEntry(2, "cache2k =  \"2.0.0.Final\""),
+                        VersionCatalogEntry(3, "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -121,9 +121,9 @@ class VersionCatalogCheckerTest {
             task
                 .checkVersions(
                     listOf(
-                        1..1 to "cache2k =  \"2.0.0.Final\"",
-                        2..2 to " byteBuddy   = \"1.12.9\"  ",
-                        3..3 to "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }",
+                        VersionCatalogEntry(1, "cache2k =  \"2.0.0.Final\""),
+                        VersionCatalogEntry(2, " byteBuddy   = \"1.12.9\"  "),
+                        VersionCatalogEntry(3, "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -140,9 +140,9 @@ class VersionCatalogCheckerTest {
             task
                 .checkVersions(
                     listOf(
-                        1..1 to "cache2k = \"2.0.0.Final\"",
-                        2..2 to "byteBuddy = \"1.12.9\"",
-                        3..3 to "slf4j = { prefer = \"1.7.25\", strictly = \"[1.7, 1.8[\" }",
+                        VersionCatalogEntry(1, "cache2k = \"2.0.0.Final\""),
+                        VersionCatalogEntry(2, "byteBuddy = \"1.12.9\""),
+                        VersionCatalogEntry(3, "slf4j = { prefer = \"1.7.25\", strictly = \"[1.7, 1.8[\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -160,9 +160,9 @@ class VersionCatalogCheckerTest {
             task
                 .checkVersions(
                     listOf(
-                        1..1 to "cache2k = \"2.0.0.Final\"",
-                        2..2 to "byteBuddy = \"1.12.9\"",
-                        3..3 to "slf4j = { prefer = \"1.7.25\",  strictly = \"[1.7, 1.8[\" }",
+                        VersionCatalogEntry(1, "cache2k = \"2.0.0.Final\""),
+                        VersionCatalogEntry(2, "byteBuddy = \"1.12.9\""),
+                        VersionCatalogEntry(3, "slf4j = { prefer = \"1.7.25\",  strictly = \"[1.7, 1.8[\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -174,8 +174,11 @@ class VersionCatalogCheckerTest {
             emptyList(),
             task.checkLibraries(
                 listOf(
-                    1..1 to "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
-                    2..2 to "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" }",
+                    VersionCatalogEntry(
+                        1,
+                        "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
+                    ),
+                    VersionCatalogEntry(2, "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" }"),
                 ),
             ),
         )
@@ -184,8 +187,14 @@ class VersionCatalogCheckerTest {
             emptyList(),
             task.checkLibraries(
                 listOf(
-                    1..1 to "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
-                    2..2 to "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" } # This is a comment.",
+                    VersionCatalogEntry(
+                        1,
+                        "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
+                    ),
+                    VersionCatalogEntry(
+                        2,
+                        "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" } # This is a comment.",
+                    ),
                 ),
             ),
         )
@@ -194,9 +203,15 @@ class VersionCatalogCheckerTest {
             emptyList(),
             task.checkLibraries(
                 listOf(
-                    1..1 to "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
-                    2..2 to "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", " +
-                        "version = { strictly = \"[1.5, 1.6[\", prefer = \"1.5.2\" } }",
+                    VersionCatalogEntry(
+                        1,
+                        "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
+                    ),
+                    VersionCatalogEntry(
+                        2,
+                        "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", " +
+                            "version = { strictly = \"[1.5, 1.6[\", prefer = \"1.5.2\" } }",
+                    ),
                 ),
             ),
         )
@@ -209,9 +224,15 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
-                        2..2 to "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", " +
-                            "version = { prefer = \"1.5.2\", strictly = \"[1.5, 1.6[\" } }",
+                        VersionCatalogEntry(
+                            1,
+                            "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
+                        ),
+                        VersionCatalogEntry(
+                            2,
+                            "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", " +
+                                "version = { prefer = \"1.5.2\", strictly = \"[1.5, 1.6[\" } }",
+                        ),
                     ),
                 ).map { it.toString() },
         )
@@ -220,8 +241,11 @@ class VersionCatalogCheckerTest {
             emptyList(),
             task.checkLibraries(
                 listOf(
-                    1..1 to "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
-                    2..2 to "antisamy = { module = \"org.owasp.antisamy:antisamy\", version = \"1.5.2\" }",
+                    VersionCatalogEntry(
+                        1,
+                        "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
+                    ),
+                    VersionCatalogEntry(2, "antisamy = { module = \"org.owasp.antisamy:antisamy\", version = \"1.5.2\" }"),
                 ),
             ),
         )
@@ -230,8 +254,11 @@ class VersionCatalogCheckerTest {
             emptyList(),
             task.checkLibraries(
                 listOf(
-                    1..1 to "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
-                    2..2 to "antisamy = { module = \"org.owasp.antisamy:antisamy\", version = \"1.5.2\" }",
+                    VersionCatalogEntry(
+                        1,
+                        "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
+                    ),
+                    VersionCatalogEntry(2, "antisamy = { module = \"org.owasp.antisamy:antisamy\", version = \"1.5.2\" }"),
                 ),
             ),
         )
@@ -244,8 +271,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "quarkus = { module = \"io.quarkus.platform:quarkus-bom\", version = \"3.21.2\" }",
-                        2..2 to "quarkusArc = { module = \"io.quarkus:quarkus-arc\" }",
+                        VersionCatalogEntry(1, "quarkus = { module = \"io.quarkus.platform:quarkus-bom\", version = \"3.21.2\" }"),
+                        VersionCatalogEntry(2, "quarkusArc = { module = \"io.quarkus:quarkus-arc\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -258,8 +285,11 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "quarkus = { group = \"io.quarkus.platform\", name = \"quarkus-bom\", version = \"3.21.2\" }",
-                        2..2 to "quarkusArc = { group = \"io.quarkus\", name = \"quarkus-arc\" }",
+                        VersionCatalogEntry(
+                            1,
+                            "quarkus = { group = \"io.quarkus.platform\", name = \"quarkus-bom\", version = \"3.21.2\" }",
+                        ),
+                        VersionCatalogEntry(2, "quarkusArc = { group = \"io.quarkus\", name = \"quarkus-arc\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -272,8 +302,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "quarkus = { module = \"io.quarkus.platform:quarkus-bom\", version = \"3.21.2\" }",
-                        2..2 to "restAssured = { module = \"io.rest-assured:rest-assured\" }",
+                        VersionCatalogEntry(1, "quarkus = { module = \"io.quarkus.platform:quarkus-bom\", version = \"3.21.2\" }"),
+                        VersionCatalogEntry(2, "restAssured = { module = \"io.rest-assured:rest-assured\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -286,8 +316,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "koin-bom = { module = \"io.insert-koin:koin-bom\", version.ref = \"koin-bom\" }",
-                        2..2 to "koin-core = { module = \"io.insert-koin:koin-core\" }",
+                        VersionCatalogEntry(1, "koin-bom = { module = \"io.insert-koin:koin-bom\", version.ref = \"koin-bom\" }"),
+                        VersionCatalogEntry(2, "koin-core = { module = \"io.insert-koin:koin-core\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -302,8 +332,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "koin-bom = { version.ref = \"koin-bom\", module = \"io.insert-koin:koin-bom\" }",
-                        2..2 to "koin-core = { module = \"io.insert-koin:koin-core\" }",
+                        VersionCatalogEntry(1, "koin-bom = { version.ref = \"koin-bom\", module = \"io.insert-koin:koin-bom\" }"),
+                        VersionCatalogEntry(2, "koin-core = { module = \"io.insert-koin:koin-core\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -316,8 +346,11 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "koin-bom = { group = \"io.insert-koin\", name = \"koin-bom\", version.ref = \"koin-bom\" }",
-                        2..2 to "koin-core = { group = \"io.insert-koin\", name = \"koin-core\" }",
+                        VersionCatalogEntry(
+                            1,
+                            "koin-bom = { group = \"io.insert-koin\", name = \"koin-bom\", version.ref = \"koin-bom\" }",
+                        ),
+                        VersionCatalogEntry(2, "koin-core = { group = \"io.insert-koin\", name = \"koin-core\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -334,8 +367,11 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "koin-bom = { version.ref = \"koin-bom\", group = \"io.insert-koin\", name = \"koin-bom\" }",
-                        2..2 to "koin-core = { name = \"koin-core\", group = \"io.insert-koin\" }",
+                        VersionCatalogEntry(
+                            1,
+                            "koin-bom = { version.ref = \"koin-bom\", group = \"io.insert-koin\", name = \"koin-bom\" }",
+                        ),
+                        VersionCatalogEntry(2, "koin-core = { name = \"koin-core\", group = \"io.insert-koin\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -350,8 +386,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "koin-core = { module = \"io.insert-koin:koin-core\" }",
-                        2..2 to "koin-test = { module = \"io.insert-koin:koin-test\" }",
+                        VersionCatalogEntry(1, "koin-core = { module = \"io.insert-koin:koin-core\" }"),
+                        VersionCatalogEntry(2, "koin-test = { module = \"io.insert-koin:koin-test\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -366,8 +402,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "koin-core = { group = \"io.insert-koin\", name = \"koin-core\" }",
-                        2..2 to "koin-test = { group = \"io.insert-koin\", name = \"koin-test\" }",
+                        VersionCatalogEntry(1, "koin-core = { group = \"io.insert-koin\", name = \"koin-core\" }"),
+                        VersionCatalogEntry(2, "koin-test = { group = \"io.insert-koin\", name = \"koin-test\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -384,8 +420,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "koin-core = { group = \"io.insert-koin\", name = \"koin-core\" }",
-                        2..2 to "koin-test = { name = \"koin-test\", group = \"io.insert-koin\" }",
+                        VersionCatalogEntry(1, "koin-core = { group = \"io.insert-koin\", name = \"koin-core\" }"),
+                        VersionCatalogEntry(2, "koin-test = { name = \"koin-test\", group = \"io.insert-koin\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -398,8 +434,11 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "activation = { name = \"javax.activation\", group = \"com.sun.activation\", version = \"1.2.0\" }",
-                        2..2 to "antisamy = { module = \"org.owasp.antisamy:antisamy\", version.ref = \"antisamy\" }",
+                        VersionCatalogEntry(
+                            1,
+                            "activation = { name = \"javax.activation\", group = \"com.sun.activation\", version = \"1.2.0\" }",
+                        ),
+                        VersionCatalogEntry(2, "antisamy = { module = \"org.owasp.antisamy:antisamy\", version.ref = \"antisamy\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -412,8 +451,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "activation = \"javax.activation:com.sun.activation:1.2.0\"",
-                        2..2 to "antisamy = { module = \"org.owasp.antisamy:antisamy\", version.ref = \"antisamy\" }",
+                        VersionCatalogEntry(1, "activation = \"javax.activation:com.sun.activation:1.2.0\""),
+                        VersionCatalogEntry(2, "antisamy = { module = \"org.owasp.antisamy:antisamy\", version.ref = \"antisamy\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -428,8 +467,11 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "activation = { name = \"javax.activation\", group = \"com.sun.activation\", version = \"1.2.0\" }",
-                        2..2 to "antisamy = { version.ref = \"antisamy\", module = \"org.owasp.antisamy:antisamy\" }",
+                        VersionCatalogEntry(
+                            1,
+                            "activation = { name = \"javax.activation\", group = \"com.sun.activation\", version = \"1.2.0\" }",
+                        ),
+                        VersionCatalogEntry(2, "antisamy = { version.ref = \"antisamy\", module = \"org.owasp.antisamy:antisamy\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -448,8 +490,11 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "antisamy = { version.ref = \"antisamy\", module = \"org.owasp.antisamy:antisamy\" }",
-                        2..2 to "activation = { name = \"javax.activation\", group = \"com.sun.activation\", version = \"1.2.0\" }",
+                        VersionCatalogEntry(1, "antisamy = { version.ref = \"antisamy\", module = \"org.owasp.antisamy:antisamy\" }"),
+                        VersionCatalogEntry(
+                            2,
+                            "activation = { name = \"javax.activation\", group = \"com.sun.activation\", version = \"1.2.0\" }",
+                        ),
                     ),
                 ).map { it.toString() },
         )
@@ -469,8 +514,11 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "antisamy = { version.ref = \"antisamy\", module = \"org.owasp.antisamy:antisamy\" }",
-                        2..2 to "activation =  { name = \"javax.activation\",   group = \"com.sun.activation\", version = \"1.2.0\" }",
+                        VersionCatalogEntry(1, "antisamy = { version.ref = \"antisamy\", module = \"org.owasp.antisamy:antisamy\" }"),
+                        VersionCatalogEntry(
+                            2,
+                            "activation =  { name = \"javax.activation\",   group = \"com.sun.activation\", version = \"1.2.0\" }",
+                        ),
                     ),
                 ).map { it.toString() },
         )
@@ -491,8 +539,11 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "antisamy = { version.ref = \"antisamy\", module = \"org.owasp.antisamy:antisamy\" } ",
-                        2..2 to "activation =  { name = \"javax.activation\",   group = \"com.sun.activation\", version = \"1.2.0\" }",
+                        VersionCatalogEntry(1, "antisamy = { version.ref = \"antisamy\", module = \"org.owasp.antisamy:antisamy\" } "),
+                        VersionCatalogEntry(
+                            2,
+                            "activation =  { name = \"javax.activation\",   group = \"com.sun.activation\", version = \"1.2.0\" }",
+                        ),
                     ),
                 ).map { it.toString() },
         )
@@ -514,8 +565,11 @@ class VersionCatalogCheckerTest {
             task
                 .checkLibraries(
                     listOf(
-                        1..1 to "antisamy = { version.ref = \"antisamy\", module = \"org.owasp.antisamy:antisamy\" } ",
-                        2..2 to "  activation =  { name = \"javax.activation\",   group = \"com.sun.activation\", version = \"1.2.0\" }",
+                        VersionCatalogEntry(1, "antisamy = { version.ref = \"antisamy\", module = \"org.owasp.antisamy:antisamy\" } "),
+                        VersionCatalogEntry(
+                            2,
+                            "  activation =  { name = \"javax.activation\",   group = \"com.sun.activation\", version = \"1.2.0\" }",
+                        ),
                     ),
                 ).map { it.toString() },
         )
@@ -527,7 +581,8 @@ class VersionCatalogCheckerTest {
             emptyList(),
             task.checkBundles(
                 listOf(
-                    1..5 to
+                    VersionCatalogEntry(
+                        1..5,
                         """
                         groovy = [
                             "groovy",
@@ -535,7 +590,9 @@ class VersionCatalogCheckerTest {
                             "spock"
                         ]
                         """.trimIndent(),
-                    6..10 to
+                    ),
+                    VersionCatalogEntry(
+                        6..10,
                         """
                         jgoodies = [
                             "jgoodiesDesktop",
@@ -543,6 +600,7 @@ class VersionCatalogCheckerTest {
                             "jgoodiesFramework"
                         ]
                         """.trimIndent(),
+                    ),
                 ),
             ),
         )
@@ -551,7 +609,8 @@ class VersionCatalogCheckerTest {
             emptyList(),
             task.checkBundles(
                 listOf(
-                    1..5 to
+                    VersionCatalogEntry(
+                        1..5,
                         """
                         groovy = [
                             "groovy",
@@ -559,7 +618,9 @@ class VersionCatalogCheckerTest {
                             "spock"
                         ]
                         """.trimIndent(),
-                    6..10 to
+                    ),
+                    VersionCatalogEntry(
+                        6..10,
                         """
                         jgoodies = [ # This a another comment.
                             "jgoodiesDesktop",
@@ -567,6 +628,7 @@ class VersionCatalogCheckerTest {
                             "jgoodiesFramework"
                         ]
                         """.trimIndent(),
+                    ),
                 ),
             ),
         )
@@ -579,7 +641,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkBundles(
                     listOf(
-                        1..5 to
+                        VersionCatalogEntry(
+                            1..5,
                             """
                             groovy = [
                                 "groovy",
@@ -587,7 +650,9 @@ class VersionCatalogCheckerTest {
                                 "spock"
                             ]
                             """.trimIndent(),
-                        6..10 to
+                        ),
+                        VersionCatalogEntry(
+                            6..10,
                             """
                             jgoodies = [
                                 "jgoodiesDesktop",
@@ -595,6 +660,7 @@ class VersionCatalogCheckerTest {
                                 "jgoodiesFramework"
                             ]
                             """.trimIndent(),
+                        ),
                     ),
                 ).map { it.toString() },
         )
@@ -607,8 +673,9 @@ class VersionCatalogCheckerTest {
             task
                 .checkBundles(
                     listOf(
-                        1..5 to "groovy = [ \"groovy\", \"groovyTemplates\", \"spock\" ]",
-                        6..10 to
+                        VersionCatalogEntry(1..5, "groovy = [ \"groovy\", \"groovyTemplates\", \"spock\" ]"),
+                        VersionCatalogEntry(
+                            6..10,
                             """
                             jgoodies = [
                                 "jgoodiesDesktop",
@@ -616,6 +683,7 @@ class VersionCatalogCheckerTest {
                                 "jgoodiesFramework"
                             ]
                             """.trimIndent(),
+                        ),
                     ),
                 ).map { it.toString() },
         )
@@ -630,7 +698,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkBundles(
                     listOf(
-                        1..5 to
+                        VersionCatalogEntry(
+                            1..5,
                             """
                             groovy = [
                                 "groovy",
@@ -638,7 +707,9 @@ class VersionCatalogCheckerTest {
                                 "spock"
                             ]
                             """.trimIndent(),
-                        6..10 to
+                        ),
+                        VersionCatalogEntry(
+                            6..10,
                             """
                             jgoodies = [
                                 "jgoodiesDesktop",
@@ -646,6 +717,7 @@ class VersionCatalogCheckerTest {
                                "jgoodiesFramework"
                             ]
                             """.trimIndent(),
+                        ),
                     ),
                 ).map { it.toString() },
         )
@@ -660,7 +732,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkBundles(
                     listOf(
-                        1..5 to
+                        VersionCatalogEntry(
+                            1..5,
                             """
                             jgoodies = [
                                 "jgoodiesDesktop",
@@ -668,7 +741,9 @@ class VersionCatalogCheckerTest {
                                 "jgoodiesFramework"
                             ]
                             """.trimIndent(),
-                        6..10 to
+                        ),
+                        VersionCatalogEntry(
+                            6..10,
                             """
                             groovy = [
                                 "groovy",
@@ -676,6 +751,7 @@ class VersionCatalogCheckerTest {
                                 "spock"
                             ]
                             """.trimIndent(),
+                        ),
                     ),
                 ).map { it.toString() },
         )
@@ -690,7 +766,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkBundles(
                     listOf(
-                        1..5 to
+                        VersionCatalogEntry(
+                            1..5,
                             """
                             groovy = [
                                 "groovy",
@@ -698,7 +775,9 @@ class VersionCatalogCheckerTest {
                                 "spock"
                             ]
                             """.trimIndent(),
-                        6..10 to
+                        ),
+                        VersionCatalogEntry(
+                            6..10,
                             """
                             jgoodies = [
                                 "jgoodiesDesktop",
@@ -706,6 +785,7 @@ class VersionCatalogCheckerTest {
                                 "jgoodiesDialogs"
                             ]
                             """.trimIndent(),
+                        ),
                     ),
                 ).map { it.toString() },
         )
@@ -722,7 +802,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkBundles(
                     listOf(
-                        1..5 to
+                        VersionCatalogEntry(
+                            1..5,
                             """
                             groovy = [
                               "groovy",
@@ -730,7 +811,9 @@ class VersionCatalogCheckerTest {
                                 "spock"
                             ]
                             """.trimIndent(),
-                        6..10 to
+                        ),
+                        VersionCatalogEntry(
+                            6..10,
                             """
                             jgoodies = [
                                 "jgoodiesDesktop",
@@ -738,6 +821,7 @@ class VersionCatalogCheckerTest {
                                 "jgoodiesDialogs"
                             ]
                             """.trimIndent(),
+                        ),
                     ),
                 ).map { it.toString() },
         )
@@ -756,7 +840,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkBundles(
                     listOf(
-                        1..5 to
+                        VersionCatalogEntry(
+                            1..5,
                             """
                             groovy = [
                               "groovy",
@@ -764,13 +849,16 @@ class VersionCatalogCheckerTest {
                                 "spock"
                             ]
                             """.trimIndent(),
-                        6..9 to
+                        ),
+                        VersionCatalogEntry(
+                            6..9,
                             """
                             jgoodies = [
                                 "jgoodiesDesktop",
                                 "jgoodiesFramework",
                                 "jgoodiesDialogs"]
                             """.trimIndent(),
+                        ),
                     ),
                 ).map { it.toString() },
         )
@@ -793,14 +881,17 @@ class VersionCatalogCheckerTest {
             task
                 .checkBundles(
                     listOf(
-                        1..4 to
+                        VersionCatalogEntry(
+                            1..4,
                             """
                             jgoodies = [
                                 "jgoodiesDesktop",
                                 "jgoodiesFramework",
                                 "jgoodiesDialogs"]
                             """.trimIndent(),
-                        5..9 to
+                        ),
+                        VersionCatalogEntry(
+                            5..9,
                             """
                             groovy = [
                               "groovy",
@@ -808,6 +899,7 @@ class VersionCatalogCheckerTest {
                                 "spock"
                             ]
                             """.trimIndent(),
+                        ),
                     ),
                 ).map { it.toString() },
         )
@@ -819,8 +911,8 @@ class VersionCatalogCheckerTest {
             emptyList(),
             task.checkPlugins(
                 listOf(
-                    1..1 to "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" }",
-                    2..2 to "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }",
+                    VersionCatalogEntry(1, "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" }"),
+                    VersionCatalogEntry(2, "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }"),
                 ),
             ),
         )
@@ -829,8 +921,11 @@ class VersionCatalogCheckerTest {
             emptyList(),
             task.checkPlugins(
                 listOf(
-                    1..1 to "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" } # This is a comment.",
-                    2..2 to "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }",
+                    VersionCatalogEntry(
+                        1,
+                        "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" } # This is a comment.",
+                    ),
+                    VersionCatalogEntry(2, "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }"),
                 ),
             ),
         )
@@ -842,8 +937,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkPlugins(
                     listOf(
-                        1..1 to "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }",
-                        2..2 to "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }",
+                        VersionCatalogEntry(1, "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }"),
+                        VersionCatalogEntry(2, "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -856,8 +951,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkPlugins(
                     listOf(
-                        1..1 to "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }",
-                        2..2 to "shadowJar = { version = \"8.1.1\", id = \"com.github.johnrengelman.shadow\" }",
+                        VersionCatalogEntry(1, "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }"),
+                        VersionCatalogEntry(2, "shadowJar = { version = \"8.1.1\", id = \"com.github.johnrengelman.shadow\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -874,8 +969,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkPlugins(
                     listOf(
-                        1..1 to "shadowJar = { version = \"8.1.1\", id = \"com.github.johnrengelman.shadow\" }",
-                        2..2 to "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }",
+                        VersionCatalogEntry(1, "shadowJar = { version = \"8.1.1\", id = \"com.github.johnrengelman.shadow\" }"),
+                        VersionCatalogEntry(2, "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -893,8 +988,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkPlugins(
                     listOf(
-                        1..1 to "shadowJar = { version = \"8.1.1\", id = \"com.github.johnrengelman.shadow\" }",
-                        2..2 to " ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }",
+                        VersionCatalogEntry(1, "shadowJar = { version = \"8.1.1\", id = \"com.github.johnrengelman.shadow\" }"),
+                        VersionCatalogEntry(2, " ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }"),
                     ),
                 ).map { it.toString() },
         )
@@ -914,8 +1009,8 @@ class VersionCatalogCheckerTest {
             task
                 .checkPlugins(
                     listOf(
-                        1..1 to "shadowJar = { version = \"8.1.1\", id =  \"com.github.johnrengelman.shadow\" }   ",
-                        2..2 to " ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }",
+                        VersionCatalogEntry(1, "shadowJar = { version = \"8.1.1\", id =  \"com.github.johnrengelman.shadow\" }   "),
+                        VersionCatalogEntry(2, " ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }"),
                     ),
                 ).map { it.toString() },
         )

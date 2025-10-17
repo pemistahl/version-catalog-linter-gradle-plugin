@@ -19,10 +19,10 @@ package io.github.pemistahl.versioncatalog.linter.plugin
 import java.io.File
 
 internal fun readVersionCatalog(versionCatalogFile: File): VersionCatalog {
-    val versions = mutableListOf<Pair<IntRange, String>>()
-    val libraries = mutableListOf<Pair<IntRange, String>>()
-    val bundles = mutableListOf<Pair<IntRange, String>>()
-    val plugins = mutableListOf<Pair<IntRange, String>>()
+    val versions = mutableListOf<VersionCatalogEntry>()
+    val libraries = mutableListOf<VersionCatalogEntry>()
+    val bundles = mutableListOf<VersionCatalogEntry>()
+    val plugins = mutableListOf<VersionCatalogEntry>()
 
     var versionsRead = false
     var librariesRead = false
@@ -54,23 +54,22 @@ internal fun readVersionCatalog(versionCatalogFile: File): VersionCatalog {
             pluginsRead = true
         } else if (trimmedLine.isNotEmpty() && !trimmedLine.startsWith('#')) {
             val actualLineNumber = lineNumber + 1
-            val element = Pair(actualLineNumber..actualLineNumber, line)
+            val entry = VersionCatalogEntry(lineNumber = actualLineNumber, content = line)
 
             if (versionsRead) {
-                versions.add(element)
+                versions.add(entry)
             } else if (librariesRead) {
-                libraries.add(element)
+                libraries.add(entry)
+            } else if (pluginsRead) {
+                plugins.add(entry)
             } else if (bundlesRead) {
                 if (line.contains("[")) {
-                    bundles.add(element)
+                    bundles.add(entry)
                 } else {
-                    val (currentRange, currentLine) = bundles.removeAt(bundles.size - 1)
-                    val newRange = currentRange.first..actualLineNumber
-                    val newLine = currentLine + "\n" + line
-                    bundles.add(Pair(newRange, newLine))
+                    val bundle = bundles.last()
+                    bundle.lineNumbers = bundle.lineNumbers.first..actualLineNumber
+                    bundle.content = bundle.content + "\n" + line
                 }
-            } else if (pluginsRead) {
-                plugins.add(element)
             }
         }
     }

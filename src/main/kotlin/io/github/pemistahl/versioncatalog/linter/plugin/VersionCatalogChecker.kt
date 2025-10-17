@@ -53,19 +53,19 @@ abstract class VersionCatalogChecker : DefaultTask() {
         }
     }
 
-    internal fun checkVersions(versions: List<Pair<IntRange, String>>): List<ErrorMessage> {
+    internal fun checkVersions(versions: List<VersionCatalogEntry>): List<ErrorMessage> {
         val errorMessages = mutableListOf<ErrorMessage>()
 
         errorMessages.addAll(checkWhitespace(versions, VersionCatalogSection.VERSIONS))
         errorMessages.addAll(checkAlphabeticSorting(versions, VersionCatalogSection.VERSIONS))
 
-        for ((lineNumbers, version) in versions) {
-            val parseResult = Toml.parse(version)
+        for (version in versions) {
+            val parseResult = Toml.parse(version.content)
             val alias = parseResult.keySet().iterator().next()
 
             if (parseResult.isTable(alias)) {
                 val versionTable = parseResult.getTableOrEmpty(alias)
-                errorMessages.addAll(checkRichVersions(versionTable, alias, lineNumbers))
+                errorMessages.addAll(checkRichVersions(versionTable, alias, version.lineNumbers))
             }
         }
 
@@ -73,14 +73,14 @@ abstract class VersionCatalogChecker : DefaultTask() {
         return errorMessages
     }
 
-    internal fun checkLibraries(libraries: List<Pair<IntRange, String>>): List<ErrorMessage> {
+    internal fun checkLibraries(libraries: List<VersionCatalogEntry>): List<ErrorMessage> {
         val errorMessages = mutableListOf<ErrorMessage>()
 
         errorMessages.addAll(checkWhitespace(libraries, VersionCatalogSection.LIBRARIES))
         errorMessages.addAll(checkAlphabeticSorting(libraries, VersionCatalogSection.LIBRARIES))
 
-        for ((lineNumbers, library) in libraries) {
-            val parseResult = Toml.parse(library)
+        for (library in libraries) {
+            val parseResult = Toml.parse(library.content)
             val alias = parseResult.keySet().iterator().next()
 
             val requiredOrder = "Required order: [module | group], name (, version(.ref))"
@@ -90,13 +90,13 @@ abstract class VersionCatalogChecker : DefaultTask() {
                 "Library with alias '$alias' has no version defined and no BOM declaration exists for it."
 
             if (parseResult.isString(alias)) {
-                errorMessages.add(ErrorMessage(lineNumbers, tableNotationMessage))
+                errorMessages.add(ErrorMessage(library.lineNumbers, tableNotationMessage))
             } else if (parseResult.isTable(alias)) {
                 val libraryTable = parseResult.getTableOrEmpty(alias)
 
                 if (libraryTable.isTable("version")) {
                     val versionTable = libraryTable.getTableOrEmpty("version")
-                    errorMessages.addAll(checkRichVersions(versionTable, alias, lineNumbers))
+                    errorMessages.addAll(checkRichVersions(versionTable, alias, library.lineNumbers))
                 }
 
                 val attributes = libraryTable.keySet().iterator()
@@ -115,7 +115,7 @@ abstract class VersionCatalogChecker : DefaultTask() {
                     val isGroupAndNameSorted = isFirstAttributeGroup && isSecondAttributeName
 
                     if (!isModuleAndVersionSorted && !isGroupAndNameSorted) {
-                        errorMessages.add(ErrorMessage(lineNumbers, notSortedMessage))
+                        errorMessages.add(ErrorMessage(library.lineNumbers, notSortedMessage))
                     }
 
                     val hasGroup = libraryTable.isString("group")
@@ -123,14 +123,14 @@ abstract class VersionCatalogChecker : DefaultTask() {
 
                     if (hasGroup && hasName && !attributes.hasNext()) {
                         if (!isLibraryDependencyOfBom(alias)) {
-                            errorMessages.add(ErrorMessage(lineNumbers, noBomMessage))
+                            errorMessages.add(ErrorMessage(library.lineNumbers, noBomMessage))
                         }
                     }
                 } else if (!isFirstAttributeModule && !isFirstAttributeGroup) {
-                    errorMessages.add(ErrorMessage(lineNumbers, notSortedMessage))
+                    errorMessages.add(ErrorMessage(library.lineNumbers, notSortedMessage))
                 } else {
                     if (!isLibraryDependencyOfBom(alias)) {
-                        errorMessages.add(ErrorMessage(lineNumbers, noBomMessage))
+                        errorMessages.add(ErrorMessage(library.lineNumbers, noBomMessage))
                     }
                 }
             }
@@ -139,14 +139,14 @@ abstract class VersionCatalogChecker : DefaultTask() {
         return errorMessages
     }
 
-    internal fun checkBundles(bundles: List<Pair<IntRange, String>>): List<ErrorMessage> {
+    internal fun checkBundles(bundles: List<VersionCatalogEntry>): List<ErrorMessage> {
         val errorMessages = mutableListOf<ErrorMessage>()
 
         errorMessages.addAll(checkWhitespace(bundles, VersionCatalogSection.BUNDLES))
         errorMessages.addAll(checkAlphabeticSorting(bundles, VersionCatalogSection.BUNDLES))
 
-        for ((lineNumbers, bundle) in bundles) {
-            val parseResult = Toml.parse(bundle)
+        for (bundle in bundles) {
+            val parseResult = Toml.parse(bundle.content)
             val alias = parseResult.keySet().iterator().next()
             val libraries = parseResult.getArray(alias)!!.toList().map { it as String }
             val sortedLibraries = libraries.sorted()
@@ -155,16 +155,16 @@ abstract class VersionCatalogChecker : DefaultTask() {
                 val sortedLibrary = sortedLibraries[i]
 
                 if (library != sortedLibrary) {
-                    val numbers =
-                        if (lineNumbers.first == lineNumbers.last) {
-                            lineNumbers.first
+                    val lineNumber =
+                        if (bundle.lineNumbers.first == bundle.lineNumbers.last) {
+                            bundle.lineNumbers.first
                         } else {
-                            lineNumbers.first + i + 1
+                            bundle.lineNumbers.first + i + 1
                         }
                     val message =
                         "Libraries of bundle with alias '$alias' are not sorted alphabetically. " +
                             "Found library '$library' where '$sortedLibrary' was expected."
-                    errorMessages.add(ErrorMessage(numbers..numbers, message))
+                    errorMessages.add(ErrorMessage(lineNumber, message))
                 }
             }
         }
@@ -172,14 +172,14 @@ abstract class VersionCatalogChecker : DefaultTask() {
         return errorMessages
     }
 
-    internal fun checkPlugins(plugins: List<Pair<IntRange, String>>): List<ErrorMessage> {
+    internal fun checkPlugins(plugins: List<VersionCatalogEntry>): List<ErrorMessage> {
         val errorMessages = mutableListOf<ErrorMessage>()
 
         errorMessages.addAll(checkWhitespace(plugins, VersionCatalogSection.PLUGINS))
         errorMessages.addAll(checkAlphabeticSorting(plugins, VersionCatalogSection.PLUGINS))
 
-        for ((lineNumbers, plugin) in plugins) {
-            val parseResult = Toml.parse(plugin)
+        for (plugin in plugins) {
+            val parseResult = Toml.parse(plugin.content)
             val alias = parseResult.keySet().iterator().next()
             val attributes = parseResult.getTable(alias)!!.keySet().iterator()
             val firstAttribute = attributes.next()
@@ -188,14 +188,14 @@ abstract class VersionCatalogChecker : DefaultTask() {
                 val message =
                     "Attributes of plugin with alias '$alias' are not sorted correctly. " +
                         "Required order: id, version(.ref)"
-                errorMessages.add(ErrorMessage(lineNumbers, message))
+                errorMessages.add(ErrorMessage(plugin.lineNumbers, message))
             }
         }
         errorMessages.sort()
         return errorMessages
     }
 
-    private fun checkBomsAndDependencies(libraries: List<Pair<IntRange, String>>) {
+    private fun checkBomsAndDependencies(libraries: List<VersionCatalogEntry>) {
         val errorMessages = mutableListOf<String>()
         val bomAliases = bomsAndDependencies.keySet().get()
         val dependencyAliases = bomsAndDependencies.get().values.flatten()
@@ -205,7 +205,7 @@ abstract class VersionCatalogChecker : DefaultTask() {
                 .asSequence()
                 .map {
                     Toml
-                        .parse(it.second.trim())
+                        .parse(it.content.trim())
                         .keySet()
                         .iterator()
                         .next()
@@ -227,7 +227,7 @@ abstract class VersionCatalogChecker : DefaultTask() {
         val bomAliasesToNames =
             libraries
                 .asSequence()
-                .map { Toml.parse(it.second.trim()) }
+                .map { Toml.parse(it.content.trim()) }
                 .filter { parseResult ->
                     val alias = parseResult.keySet().iterator().next()
                     bomAliases.contains(alias)
@@ -291,25 +291,25 @@ abstract class VersionCatalogChecker : DefaultTask() {
     }
 
     private fun checkWhitespace(
-        lines: List<Pair<IntRange, String>>,
+        entries: List<VersionCatalogEntry>,
         section: VersionCatalogSection,
     ): List<ErrorMessage> {
         val errorMessages = mutableListOf<ErrorMessage>()
         val splitRegex = Regex(" {2,}")
 
-        for ((lineNumbers, line) in lines) {
-            val parseResult = Toml.parse(line)
+        for (entry in entries) {
+            val parseResult = Toml.parse(entry.content)
             val alias = parseResult.keySet().iterator().next()
 
-            if (line.trimStart() != line) {
+            if (entry.content.trimStart() != entry.content) {
                 val message =
                     "Entry with alias '$alias' in section '${section.label}' must not have leading whitespace."
-                errorMessages.add(ErrorMessage(lineNumbers, message))
+                errorMessages.add(ErrorMessage(entry.lineNumbers, message))
             }
 
             if (section == VersionCatalogSection.BUNDLES) {
                 val arraySize = parseResult.getArray(alias)!!.size()
-                val arrayElements = line.split(Regex("(?:\r\n|\r|\n)(?: {4}|])"))
+                val arrayElements = entry.content.split(Regex("(?:\r\n|\r|\n)(?: {4}|])"))
                 val isArraySizeCorrect = arrayElements.size == arraySize + 2
                 val arrayElementStartsWithWhitespace = arrayElements.any { it.startsWith(" ") }
 
@@ -318,60 +318,59 @@ abstract class VersionCatalogChecker : DefaultTask() {
                         "Bundle with alias '$alias' " +
                             "must be indented with each library on a separate line " +
                             "preceded by four whitespace characters."
-                    errorMessages.add(ErrorMessage(lineNumbers, message))
+                    errorMessages.add(ErrorMessage(entry.lineNumbers, message))
                 }
-            } else if (line.split(splitRegex).size > 1) {
+            } else if (entry.content.split(splitRegex).size > 1) {
                 val message =
                     "Entry with alias '$alias' " +
                         "in section '${section.label}' " +
                         "must not have two or more adjacent whitespace characters."
-                errorMessages.add(ErrorMessage(lineNumbers, message))
+                errorMessages.add(ErrorMessage(entry.lineNumbers, message))
             }
 
-            if (line.trimEnd() != line) {
+            if (entry.content.trimEnd() != entry.content) {
                 val message =
                     "Entry with alias '$alias' " +
                         "in section '${section.label}' " +
                         "must not have trailing whitespace."
-                errorMessages.add(ErrorMessage(lineNumbers, message))
+                errorMessages.add(ErrorMessage(entry.lineNumbers, message))
             }
         }
         return errorMessages
     }
 
     private fun checkAlphabeticSorting(
-        lines: List<Pair<IntRange, String>>,
+        entries: List<VersionCatalogEntry>,
         section: VersionCatalogSection,
     ): List<ErrorMessage> {
         val errorMessages = mutableListOf<ErrorMessage>()
-        val sortedLines =
-            lines
+        val sortedEntries =
+            entries
                 .asSequence()
-                .map { it.second.trim() }
+                .map { it.content.trim() }
                 .sorted()
                 .toList()
 
-        for ((i, lineElem) in lines.withIndex()) {
-            val (lineNumbers, line) = lineElem
-            val sortedLine = sortedLines[i]
+        for ((i, entry) in entries.withIndex()) {
+            val sortedEntry = sortedEntries[i]
 
-            if (line.trim() != sortedLine) {
-                val lineAlias =
+            if (entry.content.trim() != sortedEntry) {
+                val entryAlias =
                     Toml
-                        .parse(line)
+                        .parse(entry.content)
                         .keySet()
                         .iterator()
                         .next()
-                val sortedLineAlias =
+                val sortedEntryAlias =
                     Toml
-                        .parse(sortedLine)
+                        .parse(sortedEntry)
                         .keySet()
                         .iterator()
                         .next()
                 val message =
                     "Entries are not sorted alphabetically in section '${section.label}'. " +
-                        "Found alias '$lineAlias' where '$sortedLineAlias' was expected."
-                errorMessages.add(ErrorMessage(lineNumbers, message))
+                        "Found alias '$entryAlias' where '$sortedEntryAlias' was expected."
+                errorMessages.add(ErrorMessage(entry.lineNumbers, message))
             }
         }
         return errorMessages

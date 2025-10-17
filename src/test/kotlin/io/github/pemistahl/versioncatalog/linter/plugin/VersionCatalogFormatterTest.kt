@@ -89,19 +89,19 @@ class VersionCatalogFormatterTest {
         return project.tasks.register("formatVersionCatalog", VersionCatalogFormatter::class.java).get()
     }
 
-    private fun createVersions(): Pair<List<Pair<IntRange, String>>, List<String>> =
+    private fun createVersions(): Pair<List<VersionCatalogEntry>, List<String>> =
         Pair(
             listOf(
-                2..2 to "duns = \"V0\"",
-                3..3 to "slf4j = { prefer = \"1.7.25\", strictly = \"[1.7, 1.8[\" }",
-                4..4 to "   exact = \"1.0\"",
-                5..5 to "groovy = \"2.5.7\"   # This is a comment. ",
-                6..6 to "axis =      \"1.3\"",
-                7..7 to "ktlint = \"12.0.2\"",
-                8..8 to "byteBuddy = \"1.12.9\"    ",
-                9..9 to "springCore =   {require=\"4.2.9.RELEASE\",reject=[\"4.3.18.RELEASE\",\"4.3.16.RELEASE\"]     }",
-                10..10 to "   cache2k = \"2.0.0.Final\"",
-                11..11 to "dockerJava = \"3.2.12\"",
+                VersionCatalogEntry(2, "duns = \"V0\""),
+                VersionCatalogEntry(3, "slf4j = { prefer = \"1.7.25\", strictly = \"[1.7, 1.8[\" }"),
+                VersionCatalogEntry(4, "   exact = \"1.0\""),
+                VersionCatalogEntry(5, "groovy = \"2.5.7\"   # This is a comment. "),
+                VersionCatalogEntry(6, "axis =      \"1.3\""),
+                VersionCatalogEntry(7, "ktlint = \"12.0.2\""),
+                VersionCatalogEntry(8, "byteBuddy = \"1.12.9\"    "),
+                VersionCatalogEntry(9, "springCore =   {require=\"4.2.9.RELEASE\",reject=[\"4.3.18.RELEASE\",\"4.3.16.RELEASE\"]     }"),
+                VersionCatalogEntry(10, "   cache2k = \"2.0.0.Final\""),
+                VersionCatalogEntry(11, "dockerJava = \"3.2.12\""),
             ),
             listOf(
                 "axis = \"1.3\"",
@@ -117,25 +117,45 @@ class VersionCatalogFormatterTest {
             ),
         )
 
-    private fun createLibraries(): Pair<List<Pair<IntRange, String>>, List<String>> =
+    private fun createLibraries(): Pair<List<VersionCatalogEntry>, List<String>> =
         Pair(
             listOf(
-                14..14 to "groovy = { group = \"org.codehaus.groovy\", name = \"groovy\", version.ref = \"groovy\" }",
-                15..15 to "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
-                17..17 to "koin-bom = { module = \"io.insert-koin:koin-bom\", version = \"4.0.2\" }",
-                18..18 to "koin-core = { module = \"io.insert-koin:koin-core\" }",
-                19..19 to "koin-test = { module = \"io.insert-koin:koin-test\" }",
-                21..21 to "jgoodiesDesktop = { group = \"com.jgoodies\", name = \"jgoodies-desktop\", version = \"1.12.1\" }",
-                22..22 to "  jgoodiesFramework             = \"com.jgoodies:jgoodies-framework:1.34.0\"",
-                23..23 to "jgoodiesDialogs = { group = \"com.jgoodies\", name = \"jgoodies-dialogs\", version = \"1.20.0\" }",
-                24..24 to "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" }",
-                25..25 to "antlr = { module = \"antlr:antlr\",    version = \"2.7.7\" } #   This is a comment.",
-                26..26 to "apacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
-                27..27 to
+                VersionCatalogEntry(14, "groovy = { group = \"org.codehaus.groovy\", name = \"groovy\", version.ref = \"groovy\" }"),
+                VersionCatalogEntry(
+                    15,
+                    "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
+                ),
+                VersionCatalogEntry(17, "koin-bom = { module = \"io.insert-koin:koin-bom\", version = \"4.0.2\" }"),
+                VersionCatalogEntry(18, "koin-core = { module = \"io.insert-koin:koin-core\" }"),
+                VersionCatalogEntry(19, "koin-test = { module = \"io.insert-koin:koin-test\" }"),
+                VersionCatalogEntry(
+                    21,
+                    "jgoodiesDesktop = { group = \"com.jgoodies\", name = \"jgoodies-desktop\", version = \"1.12.1\" }",
+                ),
+                VersionCatalogEntry(22, "  jgoodiesFramework             = \"com.jgoodies:jgoodies-framework:1.34.0\""),
+                VersionCatalogEntry(
+                    23,
+                    "jgoodiesDialogs = { group = \"com.jgoodies\", name = \"jgoodies-dialogs\", version = \"1.20.0\" }",
+                ),
+                VersionCatalogEntry(24, "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" }"),
+                VersionCatalogEntry(25, "antlr = { module = \"antlr:antlr\",    version = \"2.7.7\" } #   This is a comment."),
+                VersionCatalogEntry(
+                    26,
+                    "apacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
+                ),
+                VersionCatalogEntry(
+                    27,
                     "apacheHttpCore = { group = \"org.apache.httpcomponents\", name = \"httpcore\", " +
-                    "version = { prefer = \"4.4.16\", strictly = \"[4.4, 4.5[\" } }",
-                28..28 to "apacheHttpMime = {name = \"httpmime\", version = \"4.5.14\", group = \"org.apache.httpcomponents\" }",
-                30..30 to "groovyTemplates = {name = \"groovy-templates\", group = \"org.codehaus.groovy\", version.ref = \"groovy\" }",
+                        "version = { prefer = \"4.4.16\", strictly = \"[4.4, 4.5[\" } }",
+                ),
+                VersionCatalogEntry(
+                    28,
+                    "apacheHttpMime = {name = \"httpmime\", version = \"4.5.14\", group = \"org.apache.httpcomponents\" }",
+                ),
+                VersionCatalogEntry(
+                    30,
+                    "groovyTemplates = {name = \"groovy-templates\", group = \"org.codehaus.groovy\", version.ref = \"groovy\" }",
+                ),
             ),
             listOf(
                 "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
@@ -156,11 +176,14 @@ class VersionCatalogFormatterTest {
             ),
         )
 
-    private fun createBundles(): Pair<List<Pair<IntRange, String>>, List<String>> =
+    private fun createBundles(): Pair<List<VersionCatalogEntry>, List<String>> =
         Pair(
             listOf(
-                30..30 to "groovy    = [\"groovyTemplates\", \"groovy\"]  # This is a comment.",
-                31..32 to " jgoodies = [    \"jgoodiesDesktop\",  \n            \"jgoodiesDialogs\",    \"jgoodiesFramework\"    ]",
+                VersionCatalogEntry(30, "groovy    = [\"groovyTemplates\", \"groovy\"]  # This is a comment."),
+                VersionCatalogEntry(
+                    31..32,
+                    " jgoodies = [    \"jgoodiesDesktop\",  \n            \"jgoodiesDialogs\",    \"jgoodiesFramework\"    ]",
+                ),
             ),
             listOf(
                 """
@@ -179,12 +202,15 @@ class VersionCatalogFormatterTest {
             ),
         )
 
-    private fun createPlugins(): Pair<List<Pair<IntRange, String>>, List<String>> =
+    private fun createPlugins(): Pair<List<VersionCatalogEntry>, List<String>> =
         Pair(
             listOf(
-                35..35 to "   shadowJar =          { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }  ",
-                36..36 to "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }  #  This is a comment.",
-                37..37 to "versionCatalogLinter = { id = \"io.github.pemistahl.version-catalog-linter\" }",
+                VersionCatalogEntry(35, "   shadowJar =          { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }  "),
+                VersionCatalogEntry(
+                    36,
+                    "ktlint = { version.ref = \"ktlint\", id = \"org.jlleitschuh.gradle.ktlint\" }  #  This is a comment.",
+                ),
+                VersionCatalogEntry(37, "versionCatalogLinter = { id = \"io.github.pemistahl.version-catalog-linter\" }"),
             ),
             listOf(
                 "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" }",
