@@ -15,7 +15,7 @@
  */
 
 plugins {
-    kotlin("jvm") version "2.2.20"
+    kotlin("jvm") version "2.2.21"
     id("org.jlleitschuh.gradle.ktlint") version "13.1.0"
     id("com.gradleup.shadow") version "9.2.2"
     id("com.gradle.plugin-publish") version "2.0.0"
