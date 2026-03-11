@@ -65,6 +65,7 @@ class IOUtilsTest {
                         VersionCatalogEntry(
                             17,
                             "apacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
+                            mutableListOf("# This is a single-line comment."),
                         ),
                         VersionCatalogEntry(
                             18,
@@ -125,7 +126,7 @@ class IOUtilsTest {
                         VersionCatalogEntry(5, "dockerJava = \"3.2.12\""),
                         VersionCatalogEntry(6, "duns = \"V0\""),
                         VersionCatalogEntry(7, "exact = \"1.0\""),
-                        VersionCatalogEntry(8, "groovy = \"2.5.7\""),
+                        VersionCatalogEntry(8, "groovy = \"2.5.7\" # This is a comment."),
                         VersionCatalogEntry(9, "ktlint = \"12.0.2\""),
                         VersionCatalogEntry(10, "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }"),
                         VersionCatalogEntry(
@@ -140,57 +141,58 @@ class IOUtilsTest {
                             "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
                         ),
                         VersionCatalogEntry(15, "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" }"),
-                        VersionCatalogEntry(16, "antlr = { group = \"antlr\", name = \"antlr\", version = \"2.7.7\" }"),
-                        VersionCatalogEntry(
-                            17,
-                            "apacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
-                        ),
+                        VersionCatalogEntry(16, "antlr = { group = \"antlr\", name = \"antlr\", version = \"2.7.7\" } #   This is a comment."),
                         VersionCatalogEntry(
                             18,
+                            "apacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
+                            mutableListOf("# This is a single-line comment."),
+                        ),
+                        VersionCatalogEntry(
+                            19,
                             "apacheHttpCore = { group = \"org.apache.httpcomponents\", name = \"httpcore\", " +
                                 "version = { strictly = \"[4.4, 4.5[\", prefer = \"4.4.16\" } }",
                         ),
                         VersionCatalogEntry(
-                            19,
-                            "apacheHttpMime = { group = \"org.apache.httpcomponents\", name = \"httpmime\", version = \"4.5.14\" }",
-                        ),
-                        VersionCatalogEntry(
                             20,
-                            "groovy = { group = \"org.codehaus.groovy\", name = \"groovy\", version.ref = \"groovy\" }",
+                            "apacheHttpMime = { group = \"org.apache.httpcomponents\", name = \"httpmime\", version = \"4.5.14\" } # This comment is for a key-value pair.",
                         ),
                         VersionCatalogEntry(
                             21,
-                            "groovyTemplates = { group = \"org.codehaus.groovy\", name = \"groovy-templates\", version.ref = \"groovy\" }",
+                            "groovy = { group = \"org.codehaus.groovy\", name = \"groovy\", version.ref = \"groovy\" }",
                         ),
                         VersionCatalogEntry(
                             22,
-                            "jgoodiesDesktop = { group = \"com.jgoodies\", name = \"jgoodies-desktop\", version = \"1.12.1\" }",
+                            "groovyTemplates = { group = \"org.codehaus.groovy\", name = \"groovy-templates\", version.ref = \"groovy\" }",
                         ),
                         VersionCatalogEntry(
                             23,
-                            "jgoodiesDialogs = { group = \"com.jgoodies\", name = \"jgoodies-dialogs\", version = \"1.20.0\" }",
+                            "jgoodiesDesktop = { group = \"com.jgoodies\", name = \"jgoodies-desktop\", version = \"1.12.1\" }",
                         ),
                         VersionCatalogEntry(
                             24,
+                            "jgoodiesDialogs = { group = \"com.jgoodies\", name = \"jgoodies-dialogs\", version = \"1.20.0\" }",
+                        ),
+                        VersionCatalogEntry(
+                            25,
                             "jgoodiesFramework = { group = \"com.jgoodies\", name = \"jgoodies-framework\", version = \"1.34.0\" }",
                         ),
-                        VersionCatalogEntry(25, "koin-bom = { group = \"io.insert-koin\", name = \"koin-bom\", version = \"4.0.2\" }"),
-                        VersionCatalogEntry(26, "koin-core = { group = \"io.insert-koin\", name = \"koin-core\" }"),
-                        VersionCatalogEntry(27, "koin-test = { group = \"io.insert-koin\", name = \"koin-test\" }"),
+                        VersionCatalogEntry(26, "koin-bom = { group = \"io.insert-koin\", name = \"koin-bom\", version = \"4.0.2\" }"),
+                        VersionCatalogEntry(27, "koin-core = { group = \"io.insert-koin\", name = \"koin-core\" }"),
+                        VersionCatalogEntry(28, "koin-test = { group = \"io.insert-koin\", name = \"koin-test\" }"),
                     ),
                 bundles =
                     listOf(
                         VersionCatalogEntry(
-                            30..33,
+                            31..34,
                             """
                             groovy = [
                                 "groovy",
                                 "groovyTemplates"
-                            ]
+                            ] # This is a comment.
                             """.trimIndent(),
                         ),
                         VersionCatalogEntry(
-                            34..38,
+                            35..39,
                             """
                             jgoodies = [
                                 "jgoodiesDesktop",
@@ -202,9 +204,9 @@ class IOUtilsTest {
                     ),
                 plugins =
                     listOf(
-                        VersionCatalogEntry(41, "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" }"),
-                        VersionCatalogEntry(42, "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }"),
-                        VersionCatalogEntry(43, "versionCatalogLinter = { id = \"io.github.pemistahl.version-catalog-linter\" }"),
+                        VersionCatalogEntry(42, "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" } #  This is a comment."),
+                        VersionCatalogEntry(43, "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }"),
+                        VersionCatalogEntry(44, "versionCatalogLinter = { id = \"io.github.pemistahl.version-catalog-linter\" }"),
                     ),
             )
 

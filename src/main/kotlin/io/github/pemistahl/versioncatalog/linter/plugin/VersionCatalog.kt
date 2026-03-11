@@ -21,4 +21,9 @@ internal data class VersionCatalog(
     val libraries: List<VersionCatalogEntry>,
     val bundles: List<VersionCatalogEntry>,
     val plugins: List<VersionCatalogEntry>,
+    val versionsPrecedingComments: List<String> = emptyList(),
+    val librariesPrecedingComments: List<String> = emptyList(),
+    val bundlesPrecedingComments: List<String> = emptyList(),
+    val pluginsPrecedingComments: List<String> = emptyList(),
+    val trailingComments: List<String> = emptyList(),
 )
