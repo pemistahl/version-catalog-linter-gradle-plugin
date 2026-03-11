@@ -29,6 +29,13 @@ internal fun readVersionCatalog(versionCatalogFile: File): VersionCatalog {
     var bundlesRead = false
     var pluginsRead = false
 
+    val currentComments = mutableListOf<String>()
+
+    val versionsPrecedingComments = mutableListOf<String>()
+    val librariesPrecedingComments = mutableListOf<String>()
+    val bundlesPrecedingComments = mutableListOf<String>()
+    val pluginsPrecedingComments = mutableListOf<String>()
+
     for ((lineNumber, line) in versionCatalogFile.readLines().withIndex()) {
         val trimmedLine = line.trim()
 
@@ -37,33 +44,57 @@ internal fun readVersionCatalog(versionCatalogFile: File): VersionCatalog {
             librariesRead = false
             bundlesRead = false
             pluginsRead = false
+            versionsPrecedingComments.addAll(currentComments)
+            currentComments.clear()
         } else if (trimmedLine == VersionCatalogSection.LIBRARIES.label) {
             versionsRead = false
             librariesRead = true
             bundlesRead = false
             pluginsRead = false
+            librariesPrecedingComments.addAll(currentComments)
+            currentComments.clear()
         } else if (trimmedLine == VersionCatalogSection.BUNDLES.label) {
             versionsRead = false
             librariesRead = false
             bundlesRead = true
             pluginsRead = false
+            bundlesPrecedingComments.addAll(currentComments)
+            currentComments.clear()
         } else if (trimmedLine == VersionCatalogSection.PLUGINS.label) {
             versionsRead = false
             librariesRead = false
             bundlesRead = false
             pluginsRead = true
-        } else if (trimmedLine.isNotEmpty() && !trimmedLine.startsWith('#')) {
+            pluginsPrecedingComments.addAll(currentComments)
+            currentComments.clear()
+        } else if (trimmedLine.startsWith('#')) {
+            if (bundlesRead && bundles.isNotEmpty() && !bundles.last().content.contains(']')) {
+                val bundle = bundles.last()
+                bundle.lineNumbers = bundle.lineNumbers.first..(lineNumber + 1)
+                bundle.content = bundle.content + "\n" + line
+            } else {
+                currentComments.add(line)
+            }
+        } else if (trimmedLine.isNotEmpty()) {
             val actualLineNumber = lineNumber + 1
             val entry = VersionCatalogEntry(lineNumber = actualLineNumber, content = line)
 
             if (versionsRead) {
+                entry.precedingComments.addAll(currentComments)
+                currentComments.clear()
                 versions.add(entry)
             } else if (librariesRead) {
+                entry.precedingComments.addAll(currentComments)
+                currentComments.clear()
                 libraries.add(entry)
             } else if (pluginsRead) {
+                entry.precedingComments.addAll(currentComments)
+                currentComments.clear()
                 plugins.add(entry)
             } else if (bundlesRead) {
                 if (line.contains("[")) {
+                    entry.precedingComments.addAll(currentComments)
+                    currentComments.clear()
                     bundles.add(entry)
                 } else {
                     val bundle = bundles.last()
@@ -74,5 +105,15 @@ internal fun readVersionCatalog(versionCatalogFile: File): VersionCatalog {
         }
     }
 
-    return VersionCatalog(versions, libraries, bundles, plugins)
+    return VersionCatalog(
+        versions,
+        libraries,
+        bundles,
+        plugins,
+        versionsPrecedingComments,
+        librariesPrecedingComments,
+        bundlesPrecedingComments,
+        pluginsPrecedingComments,
+        currentComments,
+    )
 }
