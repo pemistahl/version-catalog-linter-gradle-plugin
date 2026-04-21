@@ -219,5 +219,4 @@ class VersionCatalogFormatterTest {
                 "versionCatalogLinter = { id = \"io.github.pemistahl.version-catalog-linter\" }",
             ),
         )
-
 }

@@ -35,17 +35,18 @@ abstract class VersionCatalogFormatter : DefaultTask() {
         val libraries = formatLibraries(catalog.libraries)
         val bundles = formatBundles(catalog.bundles)
         val plugins = formatPlugins(catalog.plugins)
-        val formattedCatalog = joinCatalogSections(
-            versions,
-            libraries,
-            bundles,
-            plugins,
-            catalog.versionsPrecedingComments,
-            catalog.librariesPrecedingComments,
-            catalog.bundlesPrecedingComments,
-            catalog.pluginsPrecedingComments,
-            catalog.trailingComments,
-        )
+        val formattedCatalog =
+            joinCatalogSections(
+                versions,
+                libraries,
+                bundles,
+                plugins,
+                catalog.versionsPrecedingComments,
+                catalog.librariesPrecedingComments,
+                catalog.bundlesPrecedingComments,
+                catalog.pluginsPrecedingComments,
+                catalog.trailingComments,
+            )
 
         File(versionCatalogFile.get().toURI()).writeText(formattedCatalog)
     }

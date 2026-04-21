@@ -141,7 +141,10 @@ class IOUtilsTest {
                             "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
                         ),
                         VersionCatalogEntry(15, "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" }"),
-                        VersionCatalogEntry(16, "antlr = { group = \"antlr\", name = \"antlr\", version = \"2.7.7\" } #   This is a comment."),
+                        VersionCatalogEntry(
+                            16,
+                            "antlr = { group = \"antlr\", name = \"antlr\", version = \"2.7.7\" } #   This is a comment.",
+                        ),
                         VersionCatalogEntry(
                             18,
                             "apacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
@@ -204,7 +207,10 @@ class IOUtilsTest {
                     ),
                 plugins =
                     listOf(
-                        VersionCatalogEntry(42, "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" } #  This is a comment."),
+                        VersionCatalogEntry(
+                            42,
+                            "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" } #  This is a comment.",
+                        ),
                         VersionCatalogEntry(43, "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }"),
                         VersionCatalogEntry(44, "versionCatalogLinter = { id = \"io.github.pemistahl.version-catalog-linter\" }"),
                     ),
