@@ -35,18 +35,28 @@ abstract class VersionCatalogFormatter : DefaultTask() {
         val libraries = formatLibraries(catalog.libraries)
         val bundles = formatBundles(catalog.bundles)
         val plugins = formatPlugins(catalog.plugins)
-        val formattedCatalog = joinCatalogSections(versions, libraries, bundles, plugins)
+        val formattedCatalog = joinCatalogSections(
+            versions,
+            libraries,
+            bundles,
+            plugins,
+            catalog.versionsPrecedingComments,
+            catalog.librariesPrecedingComments,
+            catalog.bundlesPrecedingComments,
+            catalog.pluginsPrecedingComments,
+            catalog.trailingComments,
+        )
 
         File(versionCatalogFile.get().toURI()).writeText(formattedCatalog)
     }
 
     internal fun formatVersions(versions: List<VersionCatalogEntry>): List<String> =
         versions
-            .asSequence()
             .map { version ->
                 val content = version.content.trim()
                 val parseResult = Toml.parse(content)
                 val alias = parseResult.keySet().iterator().next()
+                val inlineComment = extractInlineComment(content)
                 val formattedVersion =
                     if (parseResult.isString(alias)) {
                         "$alias = \"${parseResult.getString(alias)}\""
@@ -55,17 +65,22 @@ abstract class VersionCatalogFormatter : DefaultTask() {
                     } else {
                         content
                     }
-                formattedVersion
-            }.sorted()
-            .toList()
+
+                val fullEntry = mutableListOf<String>()
+                fullEntry.addAll(version.precedingComments)
+                fullEntry.add(if (inlineComment != null) "$formattedVersion $inlineComment" else formattedVersion)
+
+                alias to fullEntry.joinToString("\n")
+            }.sortedBy { it.first }
+            .map { it.second }
 
     internal fun formatLibraries(libraries: List<VersionCatalogEntry>): List<String> =
         libraries
-            .asSequence()
             .map { library ->
                 val content = library.content.trim()
                 val parseResult = Toml.parse(content)
                 val alias = parseResult.keySet().iterator().next()
+                val inlineComment = extractInlineComment(content)
                 val formattedLibrary =
                     if (parseResult.isString(alias)) {
                         parseLibraryString(parseResult, alias)
@@ -74,17 +89,22 @@ abstract class VersionCatalogFormatter : DefaultTask() {
                     } else {
                         content
                     }
-                formattedLibrary
-            }.sorted()
-            .toList()
+
+                val fullEntry = mutableListOf<String>()
+                fullEntry.addAll(library.precedingComments)
+                fullEntry.add(if (inlineComment != null) "$formattedLibrary $inlineComment" else formattedLibrary)
+
+                alias to fullEntry.joinToString("\n")
+            }.sortedBy { it.first }
+            .map { it.second }
 
     internal fun formatBundles(bundles: List<VersionCatalogEntry>): List<String> =
         bundles
-            .asSequence()
             .map { bundle ->
                 val content = bundle.content.trim()
                 val parseResult = Toml.parse(content)
                 val alias = parseResult.keySet().iterator().next()
+                val inlineComment = extractInlineComment(content)
                 val libraries =
                     parseResult
                         .getArray(alias)!!
@@ -94,17 +114,23 @@ abstract class VersionCatalogFormatter : DefaultTask() {
                         .sorted()
                         .toList()
                 val separator = "\n    "
-                "$alias = [$separator${libraries.joinToString(",$separator")}\n]"
-            }.sorted()
-            .toList()
+                val formattedBundle = "$alias = [$separator${libraries.joinToString(",$separator")}\n]"
+
+                val fullEntry = mutableListOf<String>()
+                fullEntry.addAll(bundle.precedingComments)
+                fullEntry.add(if (inlineComment != null) "$formattedBundle $inlineComment" else formattedBundle)
+
+                alias to fullEntry.joinToString("\n")
+            }.sortedBy { it.first }
+            .map { it.second }
 
     internal fun formatPlugins(plugins: List<VersionCatalogEntry>): List<String> =
         plugins
-            .asSequence()
             .map { plugin ->
                 val content = plugin.content.trim()
                 val parseResult = Toml.parse(content)
                 val alias = parseResult.keySet().iterator().next()
+                val inlineComment = extractInlineComment(content)
                 val values = parseResult.getTable(alias)?.toMap()
                 val id = values?.get("id")
                 val version = values?.get("version")
@@ -118,20 +144,45 @@ abstract class VersionCatalogFormatter : DefaultTask() {
                     formattedPlugin = "$formattedPlugin }"
                 }
 
-                formattedPlugin
-            }.sorted()
-            .toList()
+                val fullEntry = mutableListOf<String>()
+                fullEntry.addAll(plugin.precedingComments)
+                fullEntry.add(if (inlineComment != null) "$formattedPlugin $inlineComment" else formattedPlugin)
+
+                alias to fullEntry.joinToString("\n")
+            }.sortedBy { it.first }
+            .map { it.second }
+
+    private fun extractInlineComment(content: String): String? {
+        var isInsideQuotes = false
+        var commentIndex = -1
+        for (i in content.indices) {
+            val char = content[i]
+            if (char == '\"') {
+                isInsideQuotes = !isInsideQuotes
+            } else if (char == '#' && !isInsideQuotes) {
+                commentIndex = i
+                break
+            }
+        }
+        return if (commentIndex != -1) content.substring(commentIndex).trimEnd() else null
+    }
 
     internal fun joinCatalogSections(
         versions: List<String>,
         libraries: List<String>,
         bundles: List<String>,
         plugins: List<String>,
+        versionsPrecedingComments: List<String> = emptyList(),
+        librariesPrecedingComments: List<String> = emptyList(),
+        bundlesPrecedingComments: List<String> = emptyList(),
+        pluginsPrecedingComments: List<String> = emptyList(),
+        trailingComments: List<String> = emptyList(),
     ): String {
         val sections = mutableListOf<String>()
         val separator = "\n"
 
         if (versions.isNotEmpty()) {
+            sections.addAll(versionsPrecedingComments)
             sections.addAll(
                 listOf(
                     VersionCatalogSection.VERSIONS.label,
@@ -142,6 +193,7 @@ abstract class VersionCatalogFormatter : DefaultTask() {
         }
 
         if (libraries.isNotEmpty()) {
+            sections.addAll(librariesPrecedingComments)
             sections.addAll(
                 listOf(
                     VersionCatalogSection.LIBRARIES.label,
@@ -152,6 +204,7 @@ abstract class VersionCatalogFormatter : DefaultTask() {
         }
 
         if (bundles.isNotEmpty()) {
+            sections.addAll(bundlesPrecedingComments)
             sections.addAll(
                 listOf(
                     VersionCatalogSection.BUNDLES.label,
@@ -162,6 +215,7 @@ abstract class VersionCatalogFormatter : DefaultTask() {
         }
 
         if (plugins.isNotEmpty()) {
+            sections.addAll(pluginsPrecedingComments)
             sections.addAll(
                 listOf(
                     VersionCatalogSection.PLUGINS.label,
@@ -169,6 +223,11 @@ abstract class VersionCatalogFormatter : DefaultTask() {
                     "",
                 ),
             )
+        }
+
+        if (trailingComments.isNotEmpty()) {
+            sections.addAll(trailingComments)
+            sections.add("")
         }
 
         return sections.joinToString(separator)

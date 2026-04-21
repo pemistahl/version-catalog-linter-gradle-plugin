@@ -110,7 +110,7 @@ class VersionCatalogFormatterTest {
                 "dockerJava = \"3.2.12\"",
                 "duns = \"V0\"",
                 "exact = \"1.0\"",
-                "groovy = \"2.5.7\"",
+                "groovy = \"2.5.7\" # This is a comment.",
                 "ktlint = \"12.0.2\"",
                 "slf4j = { strictly = \"[1.7, 1.8[\", prefer = \"1.7.25\" }",
                 "springCore = { require = \"4.2.9.RELEASE\", reject = [ \"4.3.16.RELEASE\", \"4.3.18.RELEASE\" ] }",
@@ -142,6 +142,7 @@ class VersionCatalogFormatterTest {
                 VersionCatalogEntry(
                     26,
                     "apacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
+                    mutableListOf("# This is a single-line comment."),
                 ),
                 VersionCatalogEntry(
                     27,
@@ -150,7 +151,7 @@ class VersionCatalogFormatterTest {
                 ),
                 VersionCatalogEntry(
                     28,
-                    "apacheHttpMime = {name = \"httpmime\", version = \"4.5.14\", group = \"org.apache.httpcomponents\" }",
+                    "apacheHttpMime = {name = \"httpmime\", version = \"4.5.14\", group = \"org.apache.httpcomponents\" } # This comment is for a key-value pair.",
                 ),
                 VersionCatalogEntry(
                     30,
@@ -160,11 +161,11 @@ class VersionCatalogFormatterTest {
             listOf(
                 "activation = { group = \"com.sun.activation\", name = \"javax.activation\", version = \"1.2.0\" }",
                 "antisamy = { group = \"org.owasp.antisamy\", name = \"antisamy\", version = \"1.5.2\" }",
-                "antlr = { group = \"antlr\", name = \"antlr\", version = \"2.7.7\" }",
-                "apacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
+                "antlr = { group = \"antlr\", name = \"antlr\", version = \"2.7.7\" } #   This is a comment.",
+                "# This is a single-line comment.\napacheHttpClient = { group = \"org.apache.httpcomponents\", name = \"httpclient\", version = \"4.5.14\" }",
                 "apacheHttpCore = { group = \"org.apache.httpcomponents\", name = \"httpcore\", " +
                     "version = { strictly = \"[4.4, 4.5[\", prefer = \"4.4.16\" } }",
-                "apacheHttpMime = { group = \"org.apache.httpcomponents\", name = \"httpmime\", version = \"4.5.14\" }",
+                "apacheHttpMime = { group = \"org.apache.httpcomponents\", name = \"httpmime\", version = \"4.5.14\" } # This comment is for a key-value pair.",
                 "groovy = { group = \"org.codehaus.groovy\", name = \"groovy\", version.ref = \"groovy\" }",
                 "groovyTemplates = { group = \"org.codehaus.groovy\", name = \"groovy-templates\", version.ref = \"groovy\" }",
                 "jgoodiesDesktop = { group = \"com.jgoodies\", name = \"jgoodies-desktop\", version = \"1.12.1\" }",
@@ -190,7 +191,7 @@ class VersionCatalogFormatterTest {
                 groovy = [
                     "groovy",
                     "groovyTemplates"
-                ]
+                ] # This is a comment.
                 """.trimIndent(),
                 """
                 jgoodies = [
@@ -213,9 +214,10 @@ class VersionCatalogFormatterTest {
                 VersionCatalogEntry(37, "versionCatalogLinter = { id = \"io.github.pemistahl.version-catalog-linter\" }"),
             ),
             listOf(
-                "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" }",
+                "ktlint = { id = \"org.jlleitschuh.gradle.ktlint\", version.ref = \"ktlint\" } #  This is a comment.",
                 "shadowJar = { id = \"com.github.johnrengelman.shadow\", version = \"8.1.1\" }",
                 "versionCatalogLinter = { id = \"io.github.pemistahl.version-catalog-linter\" }",
             ),
         )
+
 }

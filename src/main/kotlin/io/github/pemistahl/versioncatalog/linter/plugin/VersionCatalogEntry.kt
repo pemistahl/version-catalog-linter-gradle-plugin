@@ -19,6 +19,11 @@ package io.github.pemistahl.versioncatalog.linter.plugin
 internal data class VersionCatalogEntry(
     var lineNumbers: IntRange,
     var content: String,
+    val precedingComments: MutableList<String> = mutableListOf(),
 ) {
-    constructor(lineNumber: Int, content: String) : this(lineNumber..lineNumber, content)
+    constructor(
+        lineNumber: Int,
+        content: String,
+        precedingComments: MutableList<String> = mutableListOf(),
+    ) : this(lineNumber..lineNumber, content, precedingComments)
 }
