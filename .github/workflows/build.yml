@@ -19,21 +19,21 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'build.gradle.kts'
-      - 'settings.gradle.kts'
-      - 'gradle/wrapper/gradle-wrapper.properties'
-      - 'src/**'
-      - '**.yml'
+    paths-ignore:
+      - '**.md'
+      - '.editorconfig'
+      - '.gitignore'
+      - '.github/workflows/release.yml'
+      - 'LICENSE'
   pull_request:
     branches:
       - main
-    paths:
-      - 'build.gradle.kts'
-      - 'settings.gradle.kts'
-      - 'gradle/wrapper/gradle-wrapper.properties'
-      - 'src/**'
-      - '**.yml'
+    paths-ignore:
+      - '**.md'
+      - '.editorconfig'
+      - '.gitignore'
+      - '.github/workflows/release.yml'
+      - 'LICENSE'
 
 jobs:
   build:
