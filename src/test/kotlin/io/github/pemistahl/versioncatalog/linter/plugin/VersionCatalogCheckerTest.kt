@@ -667,15 +667,15 @@ class VersionCatalogCheckerTest {
 
         assertEquals(
             listOf(
-                "Lines 1-5: Bundle with alias 'groovy' must be indented with " +
+                "Line 1: Bundle with alias 'groovy' must be indented with " +
                     "each library on a separate line preceded by four whitespace characters.",
             ),
             task
                 .checkBundles(
                     listOf(
-                        VersionCatalogEntry(1..5, "groovy = [ \"groovy\", \"groovyTemplates\", \"spock\" ]"),
+                        VersionCatalogEntry(1, "groovy = [ \"groovy\", \"groovyTemplates\", \"spock\" ]"),
                         VersionCatalogEntry(
-                            6..10,
+                            2..6,
                             """
                             jgoodies = [
                                 "jgoodiesDesktop",
